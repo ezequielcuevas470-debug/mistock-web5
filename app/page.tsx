@@ -26,6 +26,9 @@ export default function Home() {
   const [horaReserva, setHoraReserva] = useState('');
   const [fechaReserva, setFechaReserva] = useState('');
 
+  // Tu número de WhatsApp configurado
+  const telefonoBarberia = '8492844395';
+
   useEffect(() => {
     fetchProductosTienda();
   }, []);
@@ -41,15 +44,13 @@ export default function Home() {
       alert('Por favor completa todos los campos de la reserva');
       return;
     }
-    const telefonoBarberia = '18090000000';
-    const mensaje = `Hola, quiero hacer una reserva:%0A- *Nombre:* ${nombreReserva}%0A- *Servicio:* ${servicioReserva}%0A- *Barbero:* ${barberoReserva}%0A- *Fecha:* ${fechaReserva}%0A- *Hora:* ${horaReserva}`;
+    const mensaje = `¡Hola! 👋 Quiero confirmar una cita en *OTRO FLOW BARBERSHOP*:%0A%0A- *Cliente:* ${nombreReserva}%0A- *Servicio:* ${servicioReserva}%0A- *Barbero:* ${barberoReserva}%0A- *Fecha:* ${fechaReserva}%0A- *Hora:* ${horaReserva}`;
     window.open(`https://wa.me/${telefonoBarberia}?text=${mensaje}`, '_blank');
   };
 
   const handleComprarWhatsApp = (prod: Producto) => {
     if (prod.stock <= 0) return;
-    const telefonoBarberia = '18090000000';
-    const mensaje = `Hola, estoy interesado en comprar este producto:%0A- *${prod.nombre}*%0A- *Precio:* ${prod.precio}`;
+    const mensaje = `¡Hola! 👋 Me interesa comprar este artículo de la tienda:%0A%0A- *Producto:* ${prod.nombre}%0A- *Precio:* ${prod.precio}%0A%0A¿Está disponible?`;
     window.open(`https://wa.me/${telefonoBarberia}?text=${mensaje}`, '_blank');
   };
 
@@ -58,7 +59,7 @@ export default function Home() {
     : productos.filter(p => p.categoria?.toLowerCase() === categoriaActiva.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white flex flex-col md:flex-row selection:bg-amber-500 selection:text-black">
+    <div className="min-h-screen bg-[#09090b] text-white flex flex-col selection:bg-amber-500 selection:text-black">
       <div className="flex-1 p-6 md:p-12 max-w-2xl mx-auto w-full">
         {/* Cabecera Luxury */}
         <div className="mb-10 text-center md:text-left">
@@ -115,9 +116,8 @@ export default function Home() {
                   required
                 >
                   <option value="">Elige tu barbero...</option>
+                  <option value="Ezequiel Cuevas (Propietario)">Ezequiel Cuevas (Propietario)</option>
                   <option value="Cualquiera disponible">Cualquiera disponible</option>
-                  <option value="Carlos (Master Barber)">Carlos (Master Barber)</option>
-                  <option value="Junior (Stylist)">Junior (Stylist)</option>
                 </select>
               </div>
             </div>
@@ -232,6 +232,32 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* FOOTER PROFESIONAL */}
+      <footer className="mt-20 border-t border-zinc-900 bg-zinc-950 py-12 px-4 text-center text-zinc-400">
+        <div className="max-w-xl mx-auto space-y-4">
+          <h3 className="text-lg font-black tracking-widest text-white">
+            OTRO FLOW BARBER SHOP
+          </h3>
+          <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+            Cortes modernos, afeitados de precisión y estilo urbano exclusivo.
+          </p>
+          <div className="text-xs space-y-1 text-zinc-400 pt-2 border-t border-zinc-900/60">
+            <p>
+              <strong className="text-zinc-200">Propietario:</strong> Ezequiel Cuevas
+            </p>
+            <p>
+              <strong className="text-zinc-200">Ubicación:</strong> F5FX+WF9, Calle Máximo Gómez, Santo Domingo Este
+            </p>
+            <p>
+              <strong className="text-zinc-200">WhatsApp / Contacto:</strong> 849-284-4395
+            </p>
+          </div>
+          <div className="pt-4 text-[11px] text-zinc-600">
+            © 2026 Otro Flow Barbeshoq. Todos los derechos reservados.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
