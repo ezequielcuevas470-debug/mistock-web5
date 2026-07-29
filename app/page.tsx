@@ -134,8 +134,8 @@ export default function Home() {
         <span className="hidden sm:inline text-xs font-black uppercase tracking-wider">Atención VIP</span>
       </a>
 
-      {/* NAVBAR */}
-      <header className="sticky top-0 z-40 bg-[#030304]/80 backdrop-blur-2xl border-b border-amber-500/15 px-6 py-4">
+      {/* NAVBAR ULTRA SLIM & FROSTED */}
+      <header className="sticky top-0 z-40 bg-[#030304]/80 backdrop-blur-2xl border-b border-amber-500/15 px-6 py-4 transition-all">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           
           <div className="flex flex-col">
@@ -150,7 +150,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-300">
             <a href="#inicio" className="hover:text-amber-400 transition-colors">INICIO</a>
             <a href="#servicios" className="hover:text-amber-400 transition-colors">SERVICIOS</a>
-            <a href="#lookbook" className="hover:text-amber-400 transition-colors">GALLERY</a>
+            <a href="#lookbook" className="hover:text-amber-400 transition-colors">CORTE GALLERY</a>
             <a href="#boss" className="hover:text-amber-400 transition-colors">MASTER BARBER</a>
             <a href="#ubicacion" className="hover:text-amber-400 transition-colors">UBICACIÓN</a>
             <a href="#tienda-exclusive" className="text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1.5">
@@ -173,7 +173,7 @@ export default function Home() {
       {/* CONTENIDO PRINCIPAL */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-16 relative z-10">
 
-        {/* HERO SECTION */}
+        {/* HERO SECTION DE IMPACTO */}
         <section id="inicio" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#08080a]/90 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-6 sm:p-12 relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 blur-[100px] pointer-events-none rounded-full" />
 
@@ -212,6 +212,7 @@ export default function Home() {
               </a>
             </div>
 
+            {/* BARRA DE GARANTÍA Y COMFORT */}
             <div className="grid grid-cols-3 gap-4 pt-8 border-t border-white/10 text-[10px] font-black tracking-widest text-zinc-400 uppercase">
               <div className="flex items-center gap-2">
                 <span className="text-amber-400 text-base">☕</span>
@@ -247,7 +248,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ✂️ SERVICIOS */}
+        {/* ✂️ SERVICIOS DESTACADOS DE ALTO NIVEL */}
         <section id="servicios" className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2 border-b border-white/10 pb-4">
             <div>
@@ -325,7 +326,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🖼️ GALERÍA DE TRABAJOS */}
+        {/* 🖼️ GALERÍA DE TRABAJOS / LOOKBOOK DE CORTES */}
         <section id="lookbook" className="space-y-6">
           <div className="border-b border-white/10 pb-4">
             <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">
@@ -357,7 +358,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 👑 MASTER BARBER */}
+        {/* 👑 SECCIÓN MASTER BARBER (EZEQUIEL CUEVAS) */}
         <section id="boss" className="bg-[#08080a] border border-amber-500/30 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
@@ -370,7 +371,7 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70" />
                 <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-amber-500/40">
-                  <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">MASTER BARBER &amp; CEO</p>
+                  <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">MASTER BARBER & CEO</p>
                 </div>
               </div>
             </div>
@@ -386,7 +387,7 @@ export default function Home() {
               </div>
 
               <blockquote className="text-zinc-300 text-xs sm:text-sm font-light leading-relaxed italic border-l-2 border-amber-500 pl-4 text-left">
-                &quot;No vendemos simplemente un corte de cabello; creamos la imagen y la confianza con la que nuestros clientes se presentan al mundo día a día.&quot;
+                "No vendemos simplemente un corte de cabello; creamos la imagen y la confianza con la que nuestros clientes se presentan al mundo día a día."
               </blockquote>
 
               <p className="text-zinc-400 text-xs leading-relaxed font-light">
@@ -424,7 +425,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 📍 UBICACIÓN */}
+        {/* 📍 SECCIÓN UBICACIÓN Y HORARIOS */}
         <section id="ubicacion" className="bg-[#08080a] border border-amber-500/25 rounded-3xl p-6 sm:p-10 space-y-6">
           <div className="border-b border-white/10 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <div>
@@ -467,7 +468,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="bg-amber-500 hover:bg-amber-400 text-black font-black text-[10px] p-3.5 rounded-xl uppercase tracking-widest text-center transition-all shadow-md flex items-center justify-center gap-2"
                 >
-                  <span>MAPS</span> GOOGLE MAPS
+                  <span>🗺️</span> GOOGLE MAPS
                 </a>
                 <a
                   href={`https://wa.me/${TELEFONO_BARBERIA}?text=Hola,%20solicito%20la%20ubicación%20exacta%20por%20favor.`}
@@ -493,13 +494,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🔒 TIENDA EXCLUSIVA */}
+        {/* 🔒 SECCIÓN DE TIENDA EXCLUSIVA (PRIVATE VAULT) */}
         <section id="tienda-exclusive" className="bg-[#08080a] border-2 border-amber-500/30 rounded-3xl p-6 sm:p-10 space-y-8 relative overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.08)]">
           <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-white/10 pb-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="bg-amber-500/10 border border-amber-500/40 text-amber-400 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                  🔒 CLIENTS &amp; MEMBERS ONLY
+                  🔒 CLIENTS & MEMBERS ONLY
                 </span>
                 <span className="text-zinc-500 text-[10px] uppercase font-bold">• EDICIÓN LIMITADA</span>
               </div>
@@ -546,7 +547,7 @@ export default function Home() {
                   <img
                     src={prod.img}
                     alt={prod.nombre}
-                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#030304] via-transparent to-transparent opacity-40" />
                 </div>
@@ -558,32 +559,10 @@ export default function Home() {
 
                 <button
                   onClick={() => handleSolicitarProductoVIP(prod)}
-                  className="w-full bg-[#08080a] hover:bg-amber-500 hover:text-black border border-amber-500/40 text-amber-400 font-black py-2.5 rounded-xl uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-2"
+                  className="w-full bg-[#08080a] hover:bg-amber-500 hover:text-black border border-amber-500/40 text-amber-400 font-black py-2.5 rounded-xl uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-2 group-hover:bg-amber-500 group-hover:text-black"
                 >
-                  <span>🛍️</span> SOLICITAR RESERVA VIP
+                  <span>🛍️</span> SOLICITAR UNIDAD
                 </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ❓ PREGUNTAS FRECUENTES */}
-        <section className="bg-[#08080a] border border-amber-500/20 rounded-3xl p-6 sm:p-10 space-y-6">
-          <div className="border-b border-white/10 pb-4">
-            <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">INFORMACIÓN ÚTIL</span>
-            <h2 className="text-2xl font-black uppercase text-white font-serif">PREGUNTAS FRECUENTES</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              { q: '¿Es obligatorio reservar cita previa?', a: 'Para garantizar la mejor experiencia sin esperas, recomendamos reservar por WhatsApp o por esta web. También atendemos por orden de llegada según disponibilidad.' },
-              { q: '¿Cómo funciona el servicio VIP a domicilio?', a: 'Nos desplazamos a tu residencia u oficina con todo el equipo profesional sanitizado. Se cotiza según la zona dentro de Santo Domingo.' },
-              { q: '¿Qué métodos de pago aceptan?', a: 'Aceptamos efectivo, transferencias bancarias (BHD, Banco Popular, Banreservas) y tarjetas de crédito/débito.' },
-              { q: '¿Puedo comprar productos en la tienda física?', a: 'Sí, la Private Vault está disponible tanto en el salón como para pedidos con entrega a domicilio.' },
-            ].map((faq, idx) => (
-              <div key={idx} className="bg-[#030304] border border-white/5 p-5 rounded-2xl space-y-2">
-                <p className="text-xs font-black text-amber-400 uppercase tracking-wider">❓ {faq.q}</p>
-                <p className="text-zinc-400 text-xs font-light leading-relaxed">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -591,127 +570,148 @@ export default function Home() {
 
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/10 py-10 text-center text-[10px] text-zinc-500 uppercase font-black tracking-[0.3em] bg-[#030304] space-y-3">
-        <p className="text-amber-400 text-xs font-serif italic tracking-widest">OTRO FLOW BARBERSHOP</p>
-        <p>© 2026 EZEQUIEL CUEVAS • SANTO DOMINGO, REPÚBLICA DOMINICANA.</p>
+      {/* FOOTER EXECUTIVE */}
+      <footer className="border-t border-amber-500/20 bg-[#020203] mt-20 py-12 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col text-center md:text-left">
+            <span className="text-xl font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 font-serif">
+              OTRO FLOW BARBERSHOP
+            </span>
+            <span className="text-[9px] font-bold tracking-[0.3em] text-zinc-500 uppercase mt-1">
+              SANTO DOMINGO • REPUBLIC DOMINICAN
+            </span>
+          </div>
+
+          <p className="text-[10px] text-zinc-500 font-mono text-center">
+            © {new Date().getFullYear()} OTRO FLOW BARBERSHOP. TODOS LOS DERECHOS RESERVADOS.
+          </p>
+
+          <div className="flex gap-4 text-xs font-bold text-amber-400/80">
+            <a href="#inicio" className="hover:text-amber-300">INICIO</a>
+            <a href="#servicios" className="hover:text-amber-300">SERVICIOS</a>
+            <a href="#ubicacion" className="hover:text-amber-300">CONTACTO</a>
+          </div>
+        </div>
       </footer>
 
-      {/* MODAL DE RESERVA CITA VIP */}
+      {/* 📅 MODAL DE RESERVA VIP */}
       {modalReservaOpen && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#08080a] border border-amber-500/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 relative shadow-[0_0_60px_rgba(245,158,11,0.2)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="bg-[#08080a] border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative shadow-[0_0_50px_rgba(245,158,11,0.15)] space-y-6 max-h-[90vh] overflow-y-auto">
             
             <button
               onClick={() => setModalReservaOpen(false)}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-amber-400 font-bold text-lg"
+              className="absolute top-5 right-5 text-zinc-400 hover:text-white text-xl font-bold p-1"
             >
               ✕
             </button>
 
-            <div className="text-center space-y-1">
-              <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">RESERVA INMEDIATA</span>
-              <h3 className="text-2xl font-black uppercase text-white font-serif">SISTEMA DE CITAS VIP</h3>
+            <div>
+              <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">
+                RESERVA DE CUPO
+              </span>
+              <h3 className="text-2xl font-black text-white font-serif uppercase">AGENDAR CITA VIP</h3>
             </div>
 
-            <form onSubmit={handleReservarWhatsApp} className="space-y-3.5 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">NOMBRE COMPLETO</label>
-                  <input
-                    type="text"
-                    placeholder="Ej. Carlos Manuel"
-                    value={nombreReserva}
-                    onChange={(e) => setNombreReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-white focus:border-amber-400 outline-none"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">WHATSAPP</label>
-                  <input
-                    type="tel"
-                    placeholder="Ej. 8491234567"
-                    value={telefonoReserva}
-                    onChange={(e) => setTelefonoReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-white focus:border-amber-400 outline-none"
-                    required
-                  />
-                </div>
+            <form onSubmit={handleReservarWhatsApp} className="space-y-4 text-left">
+              <div>
+                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Nombre Completo *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej. Alexander Martínez"
+                  value={nombreReserva}
+                  onChange={(e) => setNombreReserva(e.target.value)}
+                  className="w-full bg-[#030304] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">SERVICIO DESEADO</label>
-                <select
-                  value={servicioReserva}
-                  onChange={(e) => setServicioReserva(e.target.value)}
-                  className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-zinc-200 focus:border-amber-400 outline-none"
+                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Teléfono WhatsApp *</label>
+                <input
+                  type="tel"
                   required
-                >
-                  <option value="Corte Executive - RD$400">Corte Executive (En Local) - RD$400</option>
-                  <option value="Corte + Barba Royal - RD$650">Corte + Barba Royal (En Local) - RD$650</option>
-                  <option value="Perfilado de Barba - RD$300">Perfilado de Barba (En Local) - RD$300</option>
-                  <option value="Servicio A Domicilio VIP - Desde RD$1,000">🚗 Servicio VIP A DOMICILIO - Desde RD$1,000</option>
-                </select>
+                  placeholder="Ej. 809 000 0000"
+                  value={telefonoReserva}
+                  onChange={(e) => setTelefonoReserva(e.target.value)}
+                  className="w-full bg-[#030304] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Servicio *</label>
+                  <select
+                    value={servicioReserva}
+                    onChange={(e) => setServicioReserva(e.target.value)}
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="Corte Executive - RD$400">Corte Executive - RD$400</option>
+                    <option value="Corte + Barba Royal - RD$650">Corte + Barba Royal - RD$650</option>
+                    <option value="Perfilado de Barba - RD$300">Perfilado de Barba - RD$300</option>
+                    <option value="Servicio a Domicilio VIP - Desde RD$1,000">Servicio a Domicilio VIP - Desde RD$1,000</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Especialista *</label>
+                  <select
+                    value={barberoReserva}
+                    onChange={(e) => setBarberoReserva(e.target.value)}
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="Ezequiel Cuevas (Master Barber)">Ezequiel Cuevas (Master Barber)</option>
+                    <option value="Barbero Executive Jr.">Barbero Executive Jr.</option>
+                  </select>
+                </div>
               </div>
 
               {servicioReserva.toLowerCase().includes('domicilio') && (
                 <div>
-                  <label className="block text-[10px] font-bold uppercase text-amber-400 mb-1">DIRECCIÓN DE ATENCIÓN</label>
+                  <label className="block text-[10px] font-black text-amber-400 uppercase tracking-wider mb-1">Dirección Exacta (Domicilio) *</label>
                   <input
                     type="text"
-                    placeholder="Ej. Torre Lincoln #4B, Piantini"
+                    required
+                    placeholder="Torre / Calle / Sector / No. Apartamento"
                     value={direccionDomicilio}
                     onChange={(e) => setDireccionDomicilio(e.target.value)}
-                    className="w-full bg-[#030304] border border-amber-500/60 rounded-xl p-3 text-white focus:border-amber-400 outline-none"
-                    required
+                    className="w-full bg-[#030304] border border-amber-500/50 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400"
                   />
                 </div>
               )}
 
-              <div>
-                <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">MASTER BARBER / ESPECIALISTA</label>
-                <select
-                  value={barberoReserva}
-                  onChange={(e) => setBarberoReserva(e.target.value)}
-                  className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-zinc-200 focus:border-amber-400 outline-none"
-                  required
-                >
-                  <option value="Ezequiel Cuevas (Master Barber)">👑 Ezequiel Cuevas (Master Barber)</option>
-                  <option value="Barbero Certificado VIP">Barbero Certificado VIP</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">FECHA</label>
+                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Fecha *</label>
                   <input
                     type="date"
+                    required
                     value={fechaReserva}
                     onChange={(e) => setFechaReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-zinc-200 focus:border-amber-400 outline-none"
-                    required
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">HORA</label>
+                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Hora *</label>
                   <input
                     type="time"
+                    required
                     value={horaReserva}
                     onChange={(e) => setHoraReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-zinc-200 focus:border-amber-400 outline-none"
-                    required
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-black py-4 rounded-xl uppercase tracking-wider text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-amber-500/20 mt-4"
+                className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20 mt-4"
               >
-                <span>💬</span> CONFIRMAR MI CITA VÍA WHATSAPP
+                CONFIRMAR RESERVA POR WHATSAPP 📲
               </button>
             </form>
+
           </div>
         </div>
       )}
