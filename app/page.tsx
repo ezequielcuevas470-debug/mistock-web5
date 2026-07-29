@@ -134,8 +134,8 @@ export default function Home() {
         <span className="hidden sm:inline text-xs font-black uppercase tracking-wider">Atención VIP</span>
       </a>
 
-      {/* NAVBAR ULTRA SLIM & FROSTED */}
-      <header className="sticky top-0 z-40 bg-[#030304]/80 backdrop-blur-2xl border-b border-amber-500/15 px-6 py-4 transition-all">
+      {/* NAVBAR */}
+      <header className="sticky top-0 z-40 bg-[#030304]/80 backdrop-blur-2xl border-b border-amber-500/15 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           
           <div className="flex flex-col">
@@ -150,7 +150,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-300">
             <a href="#inicio" className="hover:text-amber-400 transition-colors">INICIO</a>
             <a href="#servicios" className="hover:text-amber-400 transition-colors">SERVICIOS</a>
-            <a href="#lookbook" className="hover:text-amber-400 transition-colors">CORTE GALLERY</a>
+            <a href="#lookbook" className="hover:text-amber-400 transition-colors">GALLERY</a>
             <a href="#boss" className="hover:text-amber-400 transition-colors">MASTER BARBER</a>
             <a href="#ubicacion" className="hover:text-amber-400 transition-colors">UBICACIÓN</a>
             <a href="#tienda-exclusive" className="text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1.5">
@@ -173,7 +173,7 @@ export default function Home() {
       {/* CONTENIDO PRINCIPAL */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-16 relative z-10">
 
-        {/* HERO SECTION DE IMPACTO */}
+        {/* HERO SECTION */}
         <section id="inicio" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#08080a]/90 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-6 sm:p-12 relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 blur-[100px] pointer-events-none rounded-full" />
 
@@ -212,7 +212,6 @@ export default function Home() {
               </a>
             </div>
 
-            {/* BARRA DE GARANTÍA Y COMFORT */}
             <div className="grid grid-cols-3 gap-4 pt-8 border-t border-white/10 text-[10px] font-black tracking-widest text-zinc-400 uppercase">
               <div className="flex items-center gap-2">
                 <span className="text-amber-400 text-base">☕</span>
@@ -248,7 +247,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ✂️ SERVICIOS DESTACADOS DE ALTO NIVEL */}
+        {/* ✂️ SERVICIOS */}
         <section id="servicios" className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2 border-b border-white/10 pb-4">
             <div>
@@ -326,7 +325,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🖼️ GALERÍA DE TRABAJOS / LOOKBOOK DE CORTES */}
+        {/* 🖼️ GALERÍA DE TRABAJOS */}
         <section id="lookbook" className="space-y-6">
           <div className="border-b border-white/10 pb-4">
             <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">
@@ -358,7 +357,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 👑 SECCIÓN MASTER BARBER (EZEQUIEL CUEVAS) */}
+        {/* 👑 MASTER BARBER */}
         <section id="boss" className="bg-[#08080a] border border-amber-500/30 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
@@ -371,7 +370,7 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70" />
                 <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-amber-500/40">
-                  <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">MASTER BARBER & CEO</p>
+                  <p className="text-[9px] font-black text-amber-400 uppercase tracking-widest">MASTER BARBER &amp; CEO</p>
                 </div>
               </div>
             </div>
@@ -387,7 +386,7 @@ export default function Home() {
               </div>
 
               <blockquote className="text-zinc-300 text-xs sm:text-sm font-light leading-relaxed italic border-l-2 border-amber-500 pl-4 text-left">
-                "No vendemos simplemente un corte de cabello; creamos la imagen y la confianza con la que nuestros clientes se presentan al mundo día a día."
+                &quot;No vendemos simplemente un corte de cabello; creamos la imagen y la confianza con la que nuestros clientes se presentan al mundo día a día.&quot;
               </blockquote>
 
               <p className="text-zinc-400 text-xs leading-relaxed font-light">
@@ -425,7 +424,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 📍 SECCIÓN UBICACIÓN Y HORARIOS */}
+        {/* 📍 UBICACIÓN */}
         <section id="ubicacion" className="bg-[#08080a] border border-amber-500/25 rounded-3xl p-6 sm:p-10 space-y-6">
           <div className="border-b border-white/10 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <div>
@@ -468,7 +467,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="bg-amber-500 hover:bg-amber-400 text-black font-black text-[10px] p-3.5 rounded-xl uppercase tracking-widest text-center transition-all shadow-md flex items-center justify-center gap-2"
                 >
-                  <span>🗺️</span> GOOGLE MAPS
+                  <span>MAPS</span> GOOGLE MAPS
                 </a>
                 <a
                   href={`https://wa.me/${TELEFONO_BARBERIA}?text=Hola,%20solicito%20la%20ubicación%20exacta%20por%20favor.`}
@@ -494,13 +493,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🔒 SECCIÓN DE TIENDA EXCLUSIVA (PRIVATE VAULT) */}
+        {/* 🔒 TIENDA EXCLUSIVA */}
         <section id="tienda-exclusive" className="bg-[#08080a] border-2 border-amber-500/30 rounded-3xl p-6 sm:p-10 space-y-8 relative overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.08)]">
           <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-white/10 pb-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="bg-amber-500/10 border border-amber-500/40 text-amber-400 text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
-                  🔒 CLIENTS & MEMBERS ONLY
+                  🔒 CLIENTS &amp; MEMBERS ONLY
                 </span>
                 <span className="text-zinc-500 text-[10px] uppercase font-bold">• EDICIÓN LIMITADA</span>
               </div>
@@ -568,7 +567,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ❓ PREGUNTAS FRECUENTES (FAQ) */}
+        {/* ❓ PREGUNTAS FRECUENTES */}
         <section className="bg-[#08080a] border border-amber-500/20 rounded-3xl p-6 sm:p-10 space-y-6">
           <div className="border-b border-white/10 pb-4">
             <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">INFORMACIÓN ÚTIL</span>
@@ -592,7 +591,7 @@ export default function Home() {
 
       </main>
 
-      {/* FOOTER LUXURY */}
+      {/* FOOTER */}
       <footer className="border-t border-white/10 py-10 text-center text-[10px] text-zinc-500 uppercase font-black tracking-[0.3em] bg-[#030304] space-y-3">
         <p className="text-amber-400 text-xs font-serif italic tracking-widest">OTRO FLOW BARBERSHOP</p>
         <p>© 2026 EZEQUIEL CUEVAS • SANTO DOMINGO, REPÚBLICA DOMINICANA.</p>
