@@ -49,12 +49,18 @@ export default function AdminPage() {
   const [citas, setCitas] = useState<Cita[]>([]);
   const [transacciones, setTransacciones] = useState<Transaccion[]>([]);
   
+  // Fotos de la web
+  const [imgHero, setImgHero] = useState<string>('');
+  const [imgBarbero, setImgBarbero] = useState<string>('');
+  const [galeriaImgs, setGaleriaImgs] = useState<string[]>([]);
+  const [cargandoImagen, setCargandoImagen] = useState(false);
+
   // Formularios
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevoPrecio, setNuevoPrecio] = useState('');
   const [nuevoStock, setNuevoStock] = useState('');
   const [nuevaImg, setNuevaImg] = useState('');
-  const [nuevaCategoria, setNuevaCategoria] = useState('Ceras');
+  const [nuevaCategoria, setNuevaCategoria] = useState('Fragancias');
   const [cargando, setCargando] = useState(false);
 
   const [ingresoManual, setIngresoManual] = useState('');
@@ -103,6 +109,74 @@ export default function AdminPage() {
 
     const { data: finData } = await supabase.from('finanzas').select('*').order('id', { ascending: false });
     setTransacciones(finData || []);
+
+    // Cargar fotos guardadas
+    const { data: configData } = await supabase.from('configuracion').select('*');
+    if (configData) {
+      configData.forEach(item => {
+        if (item.clave === 'img_hero') setImgHero(item.valor);
+        if (item.clave === 'img_barbero') setImgBarbero(item.valor);
+        if (item.clave === 'galeria') {
+          try { setGaleriaImgs(JSON.parse(item.valor)); } catch (e) { setGaleriaImgs([]); }
+        }
+      });
+    }
+  };
+
+  // --- SUBIR Y CAMBIAR IMÁGENES DESDE DISPOSITIVO ---
+  const handleSubirFoto = (e: React.ChangeEvent<HTMLInputElement>, clave: string, indexGaleria?: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 4 * 1024 * 1024) {
+      alert('La imagen es muy pesada. Selecciona una imagen menor a 4MB.');
+      return;
+    }
+
+    setCargandoImagen(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const urlFinal = reader.result as string;
+      let errorResult: any = null;
+
+      if (clave === 'img_hero') {
+        setImgHero(urlFinal);
+        localStorage.setItem('fotoHeroPrincipal', urlFinal);
+        const { error } = await supabase.from('configuracion').upsert({ clave: 'img_hero', valor: urlFinal }, { onConflict: 'clave' });
+        errorResult = error;
+      } else if (clave === 'img_barbero') {
+        setImgBarbero(urlFinal);
+        localStorage.setItem('fotoBarberPerfil', urlFinal);
+        const { error } = await supabase.from('configuracion').upsert({ clave: 'img_barbero', valor: urlFinal }, { onConflict: 'clave' });
+        errorResult = error;
+      } else if (clave === 'galeria') {
+        let nuevaGaleria = [...galeriaImgs];
+        if (typeof indexGaleria === 'number') {
+          nuevaGaleria[indexGaleria] = urlFinal;
+        } else {
+          nuevaGaleria.push(urlFinal);
+        }
+        setGaleriaImgs(nuevaGaleria);
+        localStorage.setItem('galeriaVIP', JSON.stringify(nuevaGaleria));
+        const { error } = await supabase.from('configuracion').upsert({ clave: 'galeria', valor: JSON.stringify(nuevaGaleria) }, { onConflict: 'clave' });
+        errorResult = error;
+      }
+
+      setCargandoImagen(false);
+
+      if (errorResult) {
+        alert('Error al guardar en Supabase: ' + errorResult.message);
+      } else {
+        alert('¡Foto guardada correctamente en la base de datos! 📸');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const eliminarFotoGaleria = async (index: number) => {
+    const nuevaGaleria = galeriaImgs.filter((_, i) => i !== index);
+    setGaleriaImgs(nuevaGaleria);
+    await supabase.from('configuracion').upsert({ clave: 'galeria', valor: JSON.stringify(nuevaGaleria) }, { onConflict: 'clave' });
   };
 
   // --- PRODUCTOS ---
@@ -119,10 +193,14 @@ export default function AdminPage() {
     if (!nuevoNombre || !nuevoPrecio || !nuevoStock) return;
 
     setCargando(true);
+
+    // Reemplazar automático de % por $
+    const precioLimpio = nuevoPrecio.replace('%', '$');
+
     const { error } = await supabase.from('productos').insert([
       {
         nombre: nuevoNombre,
-        precio: nuevoPrecio,
+        precio: precioLimpio,
         stock: parseInt(nuevoStock),
         img: nuevaImg || 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=500&auto=format&fit=crop&q=60',
         categoria: nuevaCategoria
@@ -271,11 +349,94 @@ export default function AdminPage() {
             Panel de Control Pro (Seguro)
           </span>
           <h1 className="text-3xl font-black mt-2 tracking-tight">Admin Dashboard</h1>
-          <p className="text-zinc-400 text-xs mt-1">Sesión iniciada con éxito. Nadie más puede acceder sin tus credenciales.</p>
+          <p className="text-zinc-400 text-xs mt-1">Sesión iniciada con éxito. Gestione imágenes, citas e inventario.</p>
         </div>
         <div className="flex items-center gap-2">
           <a href="/" target="_blank" className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-xl border border-white/10 transition-all">Ver Web →</a>
           <button onClick={handleLogout} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs px-4 py-2.5 rounded-xl border border-red-500/20 transition-all">Cerrar Sesión 🔒</button>
+        </div>
+      </div>
+
+      {/* 📸 GESTIÓN DE FOTOS DEL SITIO */}
+      <div className="bg-neutral-900/80 border border-amber-500/30 p-6 rounded-3xl shadow-xl space-y-6">
+        <div>
+          <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">Personalización Visual</span>
+          <h3 className="text-xl font-black mt-1">📸 Cambiar Fotos de la Web (Selección Directa)</h3>
+          <p className="text-zinc-400 text-xs mt-1">Presiona el botón en cualquiera de las secciones para elegir una foto desde tu galería o computadora.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* FOTO PRINCIPAL (HERO) */}
+          <div className="bg-neutral-950 p-5 rounded-2xl border border-white/10 space-y-3">
+            <h4 className="font-bold text-sm text-amber-400">1. Foto Principal (Entrada / Hero)</h4>
+            <div className="w-full h-44 rounded-xl border border-white/10 overflow-hidden bg-neutral-900 relative">
+              {imgHero ? (
+                <img src={imgHero} alt="Hero" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-zinc-500">Sin foto personalizada</div>
+              )}
+            </div>
+            <label className="block cursor-pointer">
+              <span className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-2.5 rounded-xl text-xs uppercase tracking-wider block text-center transition-all">
+                {cargandoImagen ? 'Guardando...' : '📁 Seleccionar Foto Principal'}
+              </span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSubirFoto(e, 'img_hero')} />
+            </label>
+          </div>
+
+          {/* FOTO MASTER BARBER */}
+          <div className="bg-neutral-950 p-5 rounded-2xl border border-white/10 space-y-3">
+            <h4 className="font-bold text-sm text-amber-400">2. Tu Foto de Perfil (Master Barber)</h4>
+            <div className="w-full h-44 rounded-xl border border-white/10 overflow-hidden bg-neutral-900 relative">
+              {imgBarbero ? (
+                <img src={imgBarbero} alt="Master Barber" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-xs text-zinc-500">Sin foto personalizada</div>
+              )}
+            </div>
+            <label className="block cursor-pointer">
+              <span className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-2.5 rounded-xl text-xs uppercase tracking-wider block text-center transition-all">
+                {cargandoImagen ? 'Guardando...' : '📁 Seleccionar Foto Barber'}
+              </span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSubirFoto(e, 'img_barbero')} />
+            </label>
+          </div>
+
+        </div>
+
+        {/* GALERÍA EXCLUSIVA / WORKBOOK VIP */}
+        <div className="bg-neutral-950 p-5 rounded-2xl border border-white/10 space-y-4">
+          <div className="flex justify-between items-center">
+            <h4 className="font-bold text-sm text-amber-400">3. Galería Exclusiva (Workbook VIP)</h4>
+            <label className="cursor-pointer">
+              <span className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-3 py-1.5 rounded-lg border border-white/10 transition-all inline-block">
+                + Agregar nueva foto a la Galería
+              </span>
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSubirFoto(e, 'galeria')} />
+            </label>
+          </div>
+
+          {galeriaImgs.length === 0 ? (
+            <p className="text-xs text-zinc-500 italic">No has agregado fotos a la galería VIP aún.</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {galeriaImgs.map((img, idx) => (
+                <div key={idx} className="relative group rounded-xl overflow-hidden border border-white/10 h-28 bg-neutral-900">
+                  <img src={img} alt={`Galería ${idx}`} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-all">
+                    <label className="cursor-pointer bg-amber-500 text-black px-2 py-1 rounded text-[10px] font-bold">
+                      Cambiar
+                      <input type="file" accept="image/*" className="hidden" onChange={(e) => handleSubirFoto(e, 'galeria', idx)} />
+                    </label>
+                    <button onClick={() => eliminarFotoGaleria(idx)} className="bg-red-600 text-white px-2 py-1 rounded text-[10px] font-bold">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -410,11 +571,11 @@ export default function AdminPage() {
         <form onSubmit={handleCrearProducto} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Nombre</label>
-            <input type="text" placeholder="Ej. Cera Matizante" value={nuevoNombre} onChange={(e) => setNuevoNombre(e.target.value)} className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-amber-400 outline-none" required />
+            <input type="text" placeholder="Ej. Sauvage Dior" value={nuevoNombre} onChange={(e) => setNuevoNombre(e.target.value)} className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-amber-400 outline-none" required />
           </div>
           <div>
             <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Precio</label>
-            <input type="text" placeholder="Ej. $600 RD" value={nuevoPrecio} onChange={(e) => setNuevoPrecio(e.target.value)} className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-amber-400 outline-none" required />
+            <input type="text" placeholder="Ej. RD$6,800" value={nuevoPrecio} onChange={(e) => setNuevoPrecio(e.target.value)} className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-amber-400 outline-none" required />
           </div>
           <div>
             <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Stock Inicial</label>
@@ -423,6 +584,7 @@ export default function AdminPage() {
           <div>
             <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Categoría</label>
             <select value={nuevaCategoria} onChange={(e) => setNuevaCategoria(e.target.value)} className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-sm text-white focus:border-amber-400 outline-none">
+              <option value="Fragancias">Fragancias</option>
               <option value="Ceras">Ceras</option>
               <option value="Ropa">Ropa</option>
               <option value="Accesorios">Accesorios</option>
@@ -451,17 +613,19 @@ export default function AdminPage() {
                   <img src={prod.img} alt={prod.nombre} className="w-12 h-12 rounded-xl object-cover border border-white/10 bg-neutral-950" />
                   <div>
                     <h4 className="font-bold text-sm text-white">{prod.nombre}</h4>
-                    <p className="text-amber-400 text-xs font-semibold">{prod.precio} • <span className="text-zinc-400">{prod.categoria || 'General'}</span></p>
+                    <p className="text-amber-400 text-xs font-semibold">
+                      {prod.precio ? prod.precio.replace('%', '$') : ''} • <span className="text-zinc-400">{prod.categoria || 'General'}</span>
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                   <span className={`text-xs font-black px-2.5 py-1 rounded-full ${prod.stock > 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                    Stock: {prod.stock}
+                    {prod.stock > 0 ? `Stock: ${prod.stock}` : 'Agotado'}
                   </span>
-                  <div className="flex items-center gap-1.5 bg-neutral-950 p-1 rounded-xl border border-white/10">
-                    <button onClick={() => actualizarStock(prod.id, prod.stock, -1)} className="w-8 h-8 bg-neutral-900 hover:bg-red-500/20 text-white rounded-lg font-bold text-xs">-</button>
-                    <button onClick={() => actualizarStock(prod.id, prod.stock, 1)} className="w-8 h-8 bg-neutral-900 hover:bg-emerald-500/20 text-white rounded-lg font-bold text-xs">+</button>
-                    <button onClick={() => eliminarProducto(prod.id)} className="w-8 h-8 bg-neutral-900 hover:bg-red-600 text-zinc-500 hover:text-white rounded-lg font-bold text-xs ml-2">✕</button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => actualizarStock(prod.id, prod.stock, -1)} className="w-8 h-8 bg-neutral-950 border border-white/10 rounded-lg flex items-center justify-center font-bold text-sm hover:border-amber-400 transition-all">-</button>
+                    <button onClick={() => actualizarStock(prod.id, prod.stock, 1)} className="w-8 h-8 bg-neutral-950 border border-white/10 rounded-lg flex items-center justify-center font-bold text-sm hover:border-amber-400 transition-all">+</button>
+                    <button onClick={() => eliminarProducto(prod.id)} className="ml-2 text-xs bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-2.5 py-1.5 rounded-lg border border-red-500/20 transition-all font-bold">Eliminar</button>
                   </div>
                 </div>
               </div>

@@ -27,6 +27,10 @@ export default function Home() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [modalReservaOpen, setModalReservaOpen] = useState(false);
 
+  // Estados para imágenes dinámicas desde Supabase
+  const [fotoPrincipal, setFotoPrincipal] = useState('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&auto=format&fit=crop&q=80');
+  const [fotoBarber, setFotoBarber] = useState('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&auto=format&fit=crop&q=80');
+
   // Campos Reserva Formulario
   const [nombreReserva, setNombreReserva] = useState('');
   const [telefonoReserva, setTelefonoReserva] = useState('');
@@ -38,7 +42,30 @@ export default function Home() {
 
   useEffect(() => {
     fetchProductosTienda();
+    fetchConfiguracion();
   }, []);
+
+  // Cargar fotos guardadas en Supabase
+  const fetchConfiguracion = async () => {
+    try {
+      const { data } = await supabase.from('configuracion').select('*');
+      if (data && data.length > 0) {
+        const configObj = data.reduce((acc: any, item: any) => {
+          if (item.clave && item.valor) {
+            acc[item.clave] = item.valor;
+          } else {
+            acc = { ...acc, ...item };
+          }
+          return acc;
+        }, {});
+
+        if (configObj.img_hero) setFotoPrincipal(configObj.img_hero);
+        if (configObj.img_barbero) setFotoBarber(configObj.img_barbero);
+      }
+    } catch (error) {
+      console.error("Error cargando configuración:", error);
+    }
+  };
 
   const fetchProductosTienda = async () => {
     const { data } = await supabase
@@ -134,7 +161,7 @@ export default function Home() {
         <span className="hidden sm:inline text-xs font-black uppercase tracking-wider">Atención VIP</span>
       </a>
 
-      {/* NAVBAR ULTRA SLIM & FROSTED */}
+      {/* NAVBAR */}
       <header className="sticky top-0 z-40 bg-[#030304]/80 backdrop-blur-2xl border-b border-amber-500/15 px-6 py-4 transition-all">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           
@@ -173,12 +200,11 @@ export default function Home() {
       {/* CONTENIDO PRINCIPAL */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-16 relative z-10">
 
-        {/* HERO SECTION DE IMPACTO */}
+        {/* HERO SECTION */}
         <section id="inicio" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#08080a]/90 backdrop-blur-xl border border-amber-500/20 rounded-3xl p-6 sm:p-12 relative overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 blur-[100px] pointer-events-none rounded-full" />
 
           <div className="lg:col-span-7 space-y-6 z-10">
-            
             <div className="inline-flex items-center gap-2.5 bg-amber-500/10 border border-amber-500/30 px-3.5 py-1.5 rounded-full">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-amber-400 font-black tracking-[0.25em] text-[10px] uppercase">
@@ -212,27 +238,15 @@ export default function Home() {
               </a>
             </div>
 
-            {/* BARRA DE GARANTÍA Y COMFORT */}
             <div className="grid grid-cols-3 gap-4 pt-8 border-t border-white/10 text-[10px] font-black tracking-widest text-zinc-400 uppercase">
               <div className="flex items-center gap-2">
-                <span className="text-amber-400 text-base">☕</span>
-                <span>BAR DE CORTESÍA</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-amber-400 text-base">♨️</span>
-                <span>TOALLA CALIENTE</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-amber-400 text-base">📶</span>
-                <span>WIFI HIGH SPEED</span>
               </div>
             </div>
-
           </div>
 
           <div className="lg:col-span-5 relative h-80 sm:h-[460px] rounded-2xl overflow-hidden border border-amber-500/30 group shadow-2xl">
             <img
-              src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&auto=format&fit=crop&q=80"
+              src={fotoPrincipal}
               alt="Experiencia Otro Flow"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-90"
             />
@@ -248,7 +262,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ✂️ SERVICIOS DESTACADOS DE ALTO NIVEL */}
+        {/* SERVICIOS */}
         <section id="servicios" className="space-y-8">
           <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-2 border-b border-white/10 pb-4">
             <div>
@@ -267,26 +281,26 @@ export default function Home() {
                 titulo: 'CORTE EXECUTIVE',
                 precio: 'RD$400',
                 desc: 'Asesoría de visagismo, corte con técnica de graduación de precisión y acabado matte/brillo.',
-                incluye: ['Lavado con champú VIP', 'Cera de autor', 'Toalla refrescante']
+                incluye: []
               },
               {
                 icon: '💈',
                 titulo: 'CORTE + BARBA ROYAL',
                 precio: 'RD$650',
                 desc: 'Experiencia completa. Diseño de corte + alineado de barba con navaja libre y ritual de vapor.',
-                incluye: ['Ritual de toalla caliente', 'Aceite hidratante de barba', 'Cortesía de bar']
+                incluye: [ 'Aceite hidratante de barba', 'Cortesía de bar']
               },
               {
                 icon: '🪒',
                 titulo: 'PERFILADO DE BARBA',
-                precio: 'RD$300',
+                precio: 'RD$350',
                 desc: 'Alineación milimétrica, diseño de contornos con navaja tradicional y bálsamo calmante.',
-                incluye: ['Vapor de ozono', 'Tratamiento de piel', 'Cera para bigote']
+                incluye: ['Tratamiento de piel', 'Cera para bigote']
               },
               {
                 icon: '🚗',
                 titulo: 'SERVICIO A DOMICILIO VIP',
-                precio: 'DESDE RD$1,000',
+                precio: 'DESDE RD$1,000+',
                 desc: 'Llevamos el salón executive hasta tu residencia, torre u oficina con todo el equipamiento.',
                 incluye: ['Equipo sanitizado', 'Kit de barbería móvil', 'Atención en tu horario']
               },
@@ -326,7 +340,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 🖼️ GALERÍA DE TRABAJOS / LOOKBOOK DE CORTES */}
+        {/* WORKBOOK VIP / GALERÍA */}
         <section id="lookbook" className="space-y-6">
           <div className="border-b border-white/10 pb-4">
             <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">
@@ -358,14 +372,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 👑 SECCIÓN MASTER BARBER (EZEQUIEL CUEVAS) */}
+        {/* MASTER BARBER */}
         <section id="boss" className="bg-[#08080a] border border-amber-500/30 rounded-3xl p-6 sm:p-10 relative overflow-hidden shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             <div className="lg:col-span-5 flex justify-center">
               <div className="relative w-full max-w-[320px] h-[350px] rounded-2xl overflow-hidden border-2 border-amber-500/40 shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                 <img
-                  src="image_7fe6a0.jpg"
+                  src={fotoBarber}
                   alt="Ezequiel Cuevas Master Barber"
                   className="w-full h-full object-cover filter contrast-[1.1]"
                 />
@@ -391,15 +405,12 @@ export default function Home() {
               </blockquote>
 
               <p className="text-zinc-400 text-xs leading-relaxed font-light">
-                Pionero en la estética masculina urbana de alta gama. Con más de una década perfeccionando técnicas de degradado, perfilado quirúrgico de barba y asesoría de imagen para empresarios, deportistas y personalidades.
+                Pionero en la estética masculina urbana de alta gama. Con más de una década perfeccionando técnicas de degradado, perfilado quirúrgico de barba y asesoría de imagen para empresarios y deportistas.
               </p>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 {[
-                  { valor: '+10 AÑOS', label: 'EXPERIENCIA' },
-                  { valor: '+4.5K', label: 'CLIENTES' },
-                  { valor: '100%', label: 'GARANTÍA VIP' },
-                  { valor: 'TOP 1', label: 'SANTO DOMINGO' },
+                  
                 ].map((st, i) => (
                   <div key={i} className="bg-[#030304] border border-amber-500/20 p-3 rounded-xl text-center">
                     <p className="text-sm font-black text-amber-400 font-mono">{st.valor}</p>
@@ -425,7 +436,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 📍 SECCIÓN UBICACIÓN Y HORARIOS */}
+        {/* UBICACIÓN */}
         <section id="ubicacion" className="bg-[#08080a] border border-amber-500/25 rounded-3xl p-6 sm:p-10 space-y-6">
           <div className="border-b border-white/10 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <div>
@@ -438,9 +449,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
             <div className="lg:col-span-5 space-y-6">
-              
               <div className="bg-[#030304] border border-amber-500/20 p-6 rounded-2xl space-y-4">
                 <div className="flex items-start gap-3">
                   <span className="text-amber-400 text-xl mt-1">🏢</span>
@@ -479,7 +488,6 @@ export default function Home() {
                   <span>📍</span> PEDIR PIN WHATSAPP
                 </a>
               </div>
-
             </div>
 
             <div className="lg:col-span-7 h-72 sm:h-80 rounded-2xl overflow-hidden border border-amber-500/30 relative shadow-2xl bg-neutral-900">
@@ -490,11 +498,10 @@ export default function Home() {
                 loading="lazy"
               />
             </div>
-
           </div>
         </section>
 
-        {/* 🔒 SECCIÓN DE TIENDA EXCLUSIVA (PRIVATE VAULT) */}
+        {/* TIENDA EXCLUSIVA (PRIVATE VAULT) */}
         <section id="tienda-exclusive" className="bg-[#08080a] border-2 border-amber-500/30 rounded-3xl p-6 sm:p-10 space-y-8 relative overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.08)]">
           <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 border-b border-white/10 pb-6">
             <div className="space-y-2">
@@ -543,108 +550,95 @@ export default function Home() {
                   </span>
                 </div>
 
-                <div className="h-52 rounded-xl overflow-hidden bg-neutral-900 relative">
+                <div className="relative h-48 rounded-xl overflow-hidden bg-neutral-900 border border-white/5">
                   <img
                     src={prod.img}
                     alt={prod.nombre}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#030304] via-transparent to-transparent opacity-40" />
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-xs font-black text-white uppercase tracking-wider truncate">{prod.nombre}</p>
-                  <p className="text-amber-400 font-mono font-black text-sm">{prod.precio}</p>
+                  <span className="text-[9px] font-bold text-amber-400/80 uppercase tracking-wider">{prod.categoria || 'Producto'}</span>
+                  <h3 className="font-bold text-sm text-white line-clamp-1 uppercase">{prod.nombre}</h3>
+                  <p className="text-amber-400 font-black text-sm font-mono">{prod.precio}</p>
                 </div>
 
                 <button
                   onClick={() => handleSolicitarProductoVIP(prod)}
-                  className="w-full bg-[#08080a] hover:bg-amber-500 hover:text-black border border-amber-500/40 text-amber-400 font-black py-2.5 rounded-xl uppercase text-[10px] tracking-widest transition-all flex items-center justify-center gap-2 group-hover:bg-amber-500 group-hover:text-black"
+                  className="w-full bg-[#08080a] hover:bg-amber-500 hover:text-black border border-amber-500/30 text-amber-400 font-black py-2.5 rounded-xl uppercase text-[10px] tracking-widest transition-all"
                 >
-                  <span>🛍️</span> SOLICITAR UNIDAD
+                  SOLICITAR VÍA WHATSAPP
                 </button>
               </div>
             ))}
           </div>
         </section>
 
+        {/* FOOTER */}
+        <footer className="border-t border-white/10 pt-8 pb-12 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-zinc-500">
+          <p>© 2026 Otro Flow Barbershop. Todos los derechos reservados.</p>
+          <div className="flex gap-6 font-bold text-zinc-400 text-[10px] tracking-widest uppercase">
+            <a href="#inicio" className="hover:text-amber-400">Inicio</a>
+            <a href="#servicios" className="hover:text-amber-400">Servicios</a>
+            <a href="#ubicacion" className="hover:text-amber-400">Ubicación</a>
+            <a href="/admin" className="text-amber-400/70 hover:text-amber-400">Acceso Admin</a>
+          </div>
+        </footer>
+
       </main>
 
-      {/* FOOTER EXECUTIVE */}
-      <footer className="border-t border-amber-500/20 bg-[#020203] mt-20 py-12 px-6 relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex flex-col text-center md:text-left">
-            <span className="text-xl font-black tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500 font-serif">
-              OTRO FLOW BARBERSHOP
-            </span>
-            <span className="text-[9px] font-bold tracking-[0.3em] text-zinc-500 uppercase mt-1">
-              SANTO DOMINGO • REPUBLIC DOMINICAN
-            </span>
-          </div>
-
-          <p className="text-[10px] text-zinc-500 font-mono text-center">
-            © {new Date().getFullYear()} OTRO FLOW BARBERSHOP. TODOS LOS DERECHOS RESERVADOS.
-          </p>
-
-          <div className="flex gap-4 text-xs font-bold text-amber-400/80">
-            <a href="#inicio" className="hover:text-amber-300">INICIO</a>
-            <a href="#servicios" className="hover:text-amber-300">SERVICIOS</a>
-            <a href="#ubicacion" className="hover:text-amber-300">CONTACTO</a>
-          </div>
-        </div>
-      </footer>
-
-      {/* 📅 MODAL DE RESERVA VIP */}
+      {/* MODAL DE RESERVA DE CITA */}
       {modalReservaOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="bg-[#08080a] border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative shadow-[0_0_50px_rgba(245,158,11,0.15)] space-y-6 max-h-[90vh] overflow-y-auto">
-            
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-[#08080a] border border-amber-500/30 p-6 sm:p-8 rounded-3xl max-w-lg w-full relative space-y-6 shadow-2xl">
             <button
               onClick={() => setModalReservaOpen(false)}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-white text-xl font-bold p-1"
+              className="absolute top-5 right-5 text-zinc-400 hover:text-white text-xl font-bold"
             >
               ✕
             </button>
 
             <div>
-              <span className="text-[9px] font-black tracking-[0.3em] text-amber-400 uppercase">
-                RESERVA DE CUPO
+              <span className="text-amber-400 font-bold tracking-[0.2em] text-[10px] uppercase bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+                Reservación Online
               </span>
-              <h3 className="text-2xl font-black text-white font-serif uppercase">AGENDAR CITA VIP</h3>
+              <h2 className="text-2xl font-black text-white uppercase mt-2">Agenda tu Cita VIP</h2>
+              <p className="text-zinc-400 text-xs">Completa tus datos para agendar tu turno directamente en WhatsApp.</p>
             </div>
 
-            <form onSubmit={handleReservarWhatsApp} className="space-y-4 text-left">
+            <form onSubmit={handleReservarWhatsApp} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Nombre Completo *</label>
+                <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Nombre Completo *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Alexander Martínez"
+                  placeholder="Ej. Juan Pérez"
                   value={nombreReserva}
                   onChange={(e) => setNombreReserva(e.target.value)}
-                  className="w-full bg-[#030304] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Teléfono WhatsApp *</label>
+                <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Teléfono / WhatsApp *</label>
                 <input
                   type="tel"
                   required
-                  placeholder="Ej. 809 000 0000"
+                  placeholder="Ej. 8091234567"
                   value={telefonoReserva}
                   onChange={(e) => setTelefonoReserva(e.target.value)}
-                  className="w-full bg-[#030304] border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                  className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Servicio *</label>
+                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Servicio *</label>
                   <select
                     value={servicioReserva}
                     onChange={(e) => setServicioReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                   >
                     <option value="Corte Executive - RD$400">Corte Executive - RD$400</option>
                     <option value="Corte + Barba Royal - RD$650">Corte + Barba Royal - RD$650</option>
@@ -654,52 +648,52 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Especialista *</label>
+                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Especialista *</label>
                   <select
                     value={barberoReserva}
                     onChange={(e) => setBarberoReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                   >
-                    <option value="Ezequiel Cuevas (Master Barber)">Ezequiel Cuevas (Master Barber)</option>
-                    <option value="Barbero Executive Jr.">Barbero Executive Jr.</option>
+                    <option value="Ezequiel Cuevas (Master Barber)">Ezequiel Cuevas (Master)</option>
+                    <option value="Barbero Disponible">Cualquier Barbero Disponible</option>
                   </select>
                 </div>
               </div>
 
               {servicioReserva.toLowerCase().includes('domicilio') && (
                 <div>
-                  <label className="block text-[10px] font-black text-amber-400 uppercase tracking-wider mb-1">Dirección Exacta (Domicilio) *</label>
+                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Dirección Exacta para Domicilio *</label>
                   <input
                     type="text"
                     required
-                    placeholder="Torre / Calle / Sector / No. Apartamento"
+                    placeholder="Torre, sector, número de apto..."
                     value={direccionDomicilio}
                     onChange={(e) => setDireccionDomicilio(e.target.value)}
-                    className="w-full bg-[#030304] border border-amber-500/50 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                   />
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Fecha *</label>
+                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Fecha *</label>
                   <input
                     type="date"
                     required
                     value={fechaReserva}
                     onChange={(e) => setFechaReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-wider mb-1">Hora *</label>
+                  <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Hora *</label>
                   <input
                     type="time"
                     required
                     value={horaReserva}
                     onChange={(e) => setHoraReserva(e.target.value)}
-                    className="w-full bg-[#030304] border border-white/10 rounded-xl px-3 py-3 text-xs text-white focus:outline-none focus:border-amber-500"
+                    className="w-full bg-[#030304] border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
                   />
                 </div>
               </div>
@@ -708,10 +702,9 @@ export default function Home() {
                 type="submit"
                 className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20 mt-4"
               >
-                CONFIRMAR RESERVA POR WHATSAPP 📲
+                Confirmar Cita por WhatsApp 💬
               </button>
             </form>
-
           </div>
         </div>
       )}
