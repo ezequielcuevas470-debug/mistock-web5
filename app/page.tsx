@@ -497,7 +497,7 @@ export default function Home() {
                 <span>Atención Puntual Sin Esperas</span>
               </div>
               <div className="flex items-center gap-2">
-                <IconCheck className="w-4 h-4 text-[#c5a059]" />
+               
                 <span></span>
               </div>
             </div>
@@ -528,38 +528,6 @@ export default function Home() {
                 <p className="text-[8px] font-extrabold text-zinc-400 uppercase tracking-widest">Privacidad</p>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* SOCIAL PROOF / RESEÑAS */}
-        <section className="space-y-6">
-          <div className="text-center space-y-2">
-            <span className="text-[9px] font-black tracking-[0.35em] text-[#c5a059] uppercase block">
-              EXPERIENCIAS REALES
-            </span>
-            <h3 className="text-xl sm:text-2xl font-black uppercase text-white font-serif tracking-wider">
-              LO QUE DICEN NUESTROS SOCIOS
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reseñasGoogle.map((res) => (
-              <div key={res.id} className="bg-[#08080c] border border-white/10 p-6 rounded-2xl space-y-4 shadow-lg hover:border-[#c5a059]/40 transition-all">
-                <div className="flex justify-between items-center">
-                  <div className="flex text-[#c5a059] gap-1">
-                    {[...Array(res.estrellas)].map((_, i) => (
-                      <IconStar key={i} className="w-4 h-4" />
-                    ))}
-                  </div>
-                  <span className="text-[9px] font-mono text-zinc-500">{res.fecha}</span>
-                </div>
-                <p className="text-xs text-zinc-300 font-light leading-relaxed italic">"{res.comentario}"</p>
-                <div className="pt-2 border-t border-white/5 flex justify-between items-center">
-                  <span className="text-xs font-bold text-white uppercase">{res.nombre}</span>
-                  <span className="text-[9px] font-mono text-[#c5a059] uppercase">{res.rol}</span>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -664,7 +632,7 @@ export default function Home() {
             
             <div className="sm:col-span-7 space-y-6">
               <div className="inline-block border border-[#c5a059]/40 bg-[#12100b] px-3 py-1 rounded-full text-[9px] font-black tracking-[0.3em] text-[#c5a059] uppercase">
-                MASTER BARBER & FUNDADOR
+                MASTER BARBER 
               </div>
               
               <h3 className="text-3xl sm:text-5xl font-black uppercase text-white font-serif tracking-tight">
@@ -772,12 +740,10 @@ export default function Home() {
                     <span>Cortes ilimitados o hasta 4 al mes</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <IconCheck className="w-4 h-4 text-[#c5a059]" />
-                    <span>Lavado capilar y peinado incluido</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <IconCheck className="w-4 h-4 text-[#c5a059]" />
-                    <span>1 Bebida Premium o Cerveza por visita</span>
+                    <span>1 Cerveza por visita</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <IconCheck className="w-4 h-4 text-[#c5a059]" />
@@ -834,7 +800,7 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-3">
                     <IconCheck className="w-4 h-4 text-[#c5a059]" />
-                    <span>Bebidas frías ilimitadas por visita</span>
+                    <span>Una bebida de su preferencia por cada visita </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <IconCheck className="w-4 h-4 text-[#c5a059]" />
