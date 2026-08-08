@@ -21,24 +21,9 @@ interface Producto {
   detalles?: string[];
 }
 
-interface Resena {
-  id: number;
-  nombre: string;
-  rol: string;
-  comentario: string;
-  estrellas: number;
-  fecha: string;
-}
-
-// ⚙️ DATOS OFICIALES DE EZEQUIEL CUEVAS / OTRO FLOW
+// ⚙️ DATOS OFICIALES
 const TELEFONO_BARBERIA = '8492844395';
-
-const DATOS_BANCO = {
-  banco: 'Banco Popular Dominicano',
-  tipoCuenta: 'Cuenta de Ahorros',
-  numeroCuenta: '830947628',
-  titular: 'Ezequiel Cuevas',
-};
+const UBICACION_TIENDA = 'Villa Carmen, Santo Domingo Este, R.D.';
 
 // --- ICONOS VECTORIALES ---
 const IconTijeras = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
@@ -71,21 +56,16 @@ const IconCalendar = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
   </svg>
 );
 
-const IconStar = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-  </svg>
-);
-
-const IconCheck = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-  </svg>
-);
-
 const IconClock = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const IconLocation = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 );
 
@@ -106,12 +86,9 @@ export default function Home() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [modalReservaOpen, setModalReservaOpen] = useState(false);
-  const [modalMembresiaOpen, setModalMembresiaOpen] = useState(false);
   const [productoQuickView, setProductoQuickView] = useState<Producto | null>(null);
 
-  // Imágenes de alta resolución
   const [fotoHero, setFotoHero] = useState('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&auto=format&fit=crop&q=80');
-  const [fotoBarber, setFotoBarber] = useState('https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=900&auto=format&fit=crop&q=80');
 
   // Formulario Reserva
   const [nombreReserva, setNombreReserva] = useState('');
@@ -138,7 +115,6 @@ export default function Home() {
           return acc;
         }, {});
         if (configObj.img_hero) setFotoHero(configObj.img_hero);
-        if (configObj.img_barbero) setFotoBarber(configObj.img_barbero);
       }
     } catch (e) {
       console.error("Error al cargar configuración:", e);
@@ -165,8 +141,7 @@ export default function Home() {
             stock: 3, 
             categoria: 'Tenis', 
             exclusivo: true,
-            descripcion: 'Edición limitada con suela ergonómica de amortiguación alta y acabado en piel nobuck con detalles dorados.',
-            detalles: ['100% Piel Legítima', 'Suela de goma antideslizante', 'Incluye estuche protector']
+            descripcion: 'Edición limitada con suela ergonómica de amortiguación alta y acabado en piel nobuck con detalles dorados.'
           },
           { 
             id: 2, 
@@ -176,8 +151,7 @@ export default function Home() {
             stock: 6, 
             categoria: 'Gorras', 
             exclusivo: true,
-            descripcion: 'Diseño estructural de corona alta con bordado 3D en relieve mate e interior absorbente.',
-            detalles: ['Ajuste Snapback de precisión', 'Algodón Premium transpirable']
+            descripcion: 'Diseño estructural de corona alta con bordado 3D en relieve mate e interior absorbente.'
           },
           { 
             id: 3, 
@@ -187,8 +161,7 @@ export default function Home() {
             stock: 5, 
             categoria: 'Sandalias', 
             exclusivo: false,
-            descripcion: 'Chanclas de descanso ortopédicas de densidad dual, perfectas para después del entrenamiento o estancia casual.',
-            detalles: ['Suela Memory Foam', 'Banda acolchada ajuste anatómico']
+            descripcion: 'Chanclas de descanso ortopédicas de densidad dual, perfectas para después del entrenamiento o estancia casual.'
           },
           { 
             id: 4, 
@@ -198,8 +171,7 @@ export default function Home() {
             stock: 4, 
             categoria: 'Perfumes', 
             exclusivo: true,
-            descripcion: 'Extracto de perfume intenso con notas de madera de cedro, ámbar gris, bergamota y fondo de cuero ahumado.',
-            detalles: ['Duración superior a 12 horas', 'Envase de cristal soplado oscuro']
+            descripcion: 'Extracto de perfume intenso con notas de madera de cedro, ámbar gris, bergamota y fondo de cuero ahumado.'
           },
         ]);
       }
@@ -261,7 +233,6 @@ export default function Home() {
     window.open(`https://wa.me/${TELEFONO_BARBERIA}?text=${mensaje}`, '_blank');
   };
 
-  // Filtrado optimizado para que cada artículo se coloque exactamente en su categoría correspondiente
   const productosFiltrados = categoriaActiva === 'Todos'
     ? productos
     : productos.filter(p => {
@@ -274,15 +245,22 @@ export default function Home() {
     <div className="min-h-screen bg-[#030305] text-zinc-100 font-sans selection:bg-[#c5a059] selection:text-black relative overflow-x-hidden">
       
       {/* BARRA SUPERIOR DE ANUNCIOS */}
-      <div className="bg-gradient-to-r from-[#12100b] via-[#241c0e] to-[#12100b] border-b border-[#c5a059]/20 py-2 px-4 text-center text-[10px] uppercase font-bold tracking-[0.25em] text-[#d4af37] flex items-center justify-center gap-3">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        <span>ABIERTO HOY — RESERVAS Y SERVICIO A DOMICILIO VIP</span>
+      <div className="bg-gradient-to-r from-[#12100b] via-[#241c0e] to-[#12100b] border-b border-[#c5a059]/20 py-2.5 px-4 text-center text-[10px] uppercase font-bold tracking-[0.25em] text-[#d4af37] flex flex-wrap items-center justify-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span>ABIERTO HOY EN VILLA CARMEN</span>
+        </div>
+        <span className="hidden sm:inline text-white/20">•</span>
+        <div className="flex items-center gap-1.5 text-zinc-300">
+          <IconLocation className="w-3.5 h-3.5 text-[#c5a059]" />
+          <span>{UBICACION_TIENDA}</span>
+        </div>
       </div>
 
-      {/* NAVBAR GLASSMORPHISM */}
+      {/* NAVBAR */}
       <header className="sticky top-0 z-50 bg-[#030305]/85 backdrop-blur-xl border-b border-white/5 px-6 py-4 transition-all">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           
@@ -299,6 +277,7 @@ export default function Home() {
             <a href="#inicio" className="hover:text-[#c5a059] transition-colors">INICIO</a>
             <a href="#servicios" className="hover:text-[#c5a059] transition-colors">SERVICIOS</a>
             <a href="#store" className="hover:text-[#c5a059] transition-colors text-[#c5a059]">VAULT STORE</a>
+            <a href="#ubicacion" className="hover:text-[#c5a059] transition-colors">UBICACIÓN</a>
           </nav>
 
           <button
@@ -326,7 +305,7 @@ export default function Home() {
           <div className="lg:col-span-7 space-y-8 z-10">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#c5a059]/30 bg-[#12100b] text-[9px] font-black tracking-[0.3em] text-[#c5a059] uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]" />
-              SANTO DOMINGO • BARBERING ELITE
+              SANTO DOMINGO ESTE • VILLA CARMEN
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-[0.92] font-serif text-white">
@@ -337,7 +316,7 @@ export default function Home() {
             </h1>
 
             <p className="text-zinc-400 text-xs sm:text-sm max-w-lg leading-relaxed font-light tracking-wide">
-              Barbería ejecutiva de alto nivel en Piantini. Cuidado personal superior, ambiente exclusivo con bebidas de cortesía y atención personalizada por Ezequiel Cuevas.
+              Barbería ejecutiva de alto nivel en Villa Carmen, S.D.E. Cuidado personal superior, ambiente exclusivo con bebidas de cortesía y atención personalizada por Ezequiel Cuevas.
             </p>
 
             <div className="flex flex-wrap items-center gap-6 pt-2">
@@ -452,7 +431,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* VAULT STORE / TIENDA CON FILTRADO DE CATEGORÍAS */}
+        {/* VAULT STORE / TIENDA */}
         <section id="store" className="space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 gap-6">
             <div className="space-y-2">
@@ -555,6 +534,82 @@ export default function Home() {
           )}
         </section>
 
+        {/* UBICACIÓN DE LA TIENDA */}
+        <section id="ubicacion" className="space-y-10">
+          <div className="border-b border-white/10 pb-6 space-y-2">
+            <span className="text-[9px] font-black tracking-[0.35em] text-[#c5a059] uppercase block">
+              ENCUÉNTRANOS
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black uppercase text-white font-serif tracking-wider">
+              UBICACIÓN DE LA TIENDA
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#08080c] border border-[#c5a059]/20 rounded-3xl p-6 sm:p-10 shadow-2xl">
+            <div className="lg:col-span-5 space-y-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#12100b] border border-[#c5a059]/30 text-[9px] font-black tracking-widest text-[#c5a059] uppercase">
+                  SANTO DOMINGO ESTE • VILLA CARMEN
+                </div>
+                <h3 className="text-2xl font-black text-white font-serif uppercase tracking-wide">
+                  OTRO FLOW EXECUTIVE BARBERSHOP
+                </h3>
+              </div>
+
+              <p className="text-zinc-400 text-xs leading-relaxed font-light">
+                Te esperamos en nuestra sede principal ubicada en Villa Carmen, Santo Domingo Este. Un espacio diseñado con el más alto confort, excelente ambiente y atención preferencial.
+              </p>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start gap-3 text-xs text-zinc-300">
+                  <div className="mt-0.5 p-2 rounded-lg bg-black border border-white/10">
+                    <IconLocation />
+                  </div>
+                  <div>
+                    <strong className="text-white block uppercase tracking-wide text-[10px] text-[#c5a059]">Dirección Oficial:</strong>
+                    <span>{UBICACION_TIENDA}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 text-xs text-zinc-300">
+                  <div className="mt-0.5 p-2 rounded-lg bg-black border border-white/10">
+                    <IconClock />
+                  </div>
+                  <div>
+                    <strong className="text-white block uppercase tracking-wide text-[10px] text-[#c5a059]">Horario de Atención:</strong>
+                    <span>Lunes a Sábado: 9:00 AM — 8:00 PM<br />Domingos: Previa Cita</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4">
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(UBICACION_TIENDA)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 bg-zinc-900 hover:bg-black border border-[#c5a059]/40 text-[#c5a059] px-6 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg"
+                >
+                  <IconLocation className="w-4 h-4 text-[#c5a059]" />
+                  <span>VER EN GOOGLE MAPS</span>
+                </a>
+              </div>
+            </div>
+
+            <div className="lg:col-span-7 h-80 sm:h-96 rounded-2xl overflow-hidden border border-white/10 shadow-inner relative bg-black">
+              <iframe
+                title="Ubicación Villa Carmen Santo Domingo Este"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.150!2d-69.835!3d18.515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ea563!2sVilla+Carmen%2C+Santo+Domingo+Este!5e0!3m2!1ses!2sdo!4v1650000000000!5m2!1ses!2sdo"
+                width="100%"
+                height="100%"
+                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(120%)' }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
+        </section>
+
       </main>
 
       {/* FOOTER */}
@@ -565,7 +620,7 @@ export default function Home() {
               OTRO FLOW
             </span>
             <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
-              Executive Barbershop & Vault Store • Piantini, Santo Domingo
+              Executive Barbershop & Vault Store • Villa Carmen, S.D.E.
             </p>
           </div>
 
@@ -639,17 +694,18 @@ export default function Home() {
                     className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
                   >
                     <option value="Ezequiel Cuevas (Master Barber)">Ezequiel Cuevas (Master Barber)</option>
+                    <option value="Staff Executive">Especialista del Staff</option>
                   </select>
                 </div>
               </div>
 
               {servicioReserva.toLowerCase().includes('domicilio') && (
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#c5a059] uppercase tracking-wider">Dirección Exacta Domicilio</label>
+                  <label className="text-[10px] font-bold text-[#c5a059] uppercase tracking-wider">Dirección Exacta para Domicilio</label>
                   <input
                     type="text"
                     required
-                    placeholder="Ej. Torre Bella Vista, Piantini, Apt 4B"
+                    placeholder="Calle, Número, Torre, Sector (Villa Carmen, S.D.E., etc.)"
                     value={direccionDomicilio}
                     onChange={(e) => setDireccionDomicilio(e.target.value)}
                     className="w-full bg-black border border-[#c5a059]/40 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
@@ -659,18 +715,18 @@ export default function Home() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fecha</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fecha de Cita</label>
                   <input
                     type="date"
                     required
                     value={fechaReserva}
                     onChange={(e) => setFechaReserva(e.target.value)}
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none [color-scheme:dark]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Hora</label>
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Hora Disponible</label>
                   <select
                     value={horaReserva}
                     onChange={(e) => setHoraReserva(e.target.value)}
@@ -685,19 +741,19 @@ export default function Home() {
 
               <button
                 type="submit"
-                className="w-full bg-[#c5a059] hover:opacity-90 text-black font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg mt-2"
+                className="w-full bg-gradient-to-r from-[#d4af37] via-[#c5a059] to-[#8a6d3b] text-black font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all shadow-[0_0_25px_rgba(197,160,89,0.3)] hover:opacity-95"
               >
-                CONFIRMAR CITA POR WHATSAPP
+                CONFIRMAR Y ENVIAR POR WHATSAPP
               </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* MODAL QUICK VIEW PRODUCTO */}
+      {/* MODAL VISTA RÁPIDA DE PRODUCTO */}
       {productoQuickView && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="bg-[#08080c] border border-[#c5a059]/40 w-full max-w-2xl rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+          <div className="bg-[#08080c] border border-[#c5a059]/40 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
             <button
               onClick={() => setProductoQuickView(null)}
               className="absolute top-6 right-6 text-zinc-400 hover:text-white"
@@ -705,37 +761,37 @@ export default function Home() {
               <IconX />
             </button>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-              <div className="h-64 sm:h-80 rounded-2xl overflow-hidden bg-black border border-white/10">
-                <img src={productoQuickView.img} alt={productoQuickView.nombre} className="w-full h-full object-cover" />
-              </div>
+            <div className="relative h-64 rounded-2xl overflow-hidden bg-black border border-white/10">
+              <img
+                src={productoQuickView.img}
+                alt={productoQuickView.nombre}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-              <div className="space-y-4">
-                <div>
-                  <span className="text-[9px] font-bold tracking-widest text-[#c5a059] uppercase">
-                    {productoQuickView.categoria || 'VAULT STORE'}
-                  </span>
-                  <h3 className="text-xl font-black text-white uppercase tracking-wider mt-1">{productoQuickView.nombre}</h3>
-                </div>
+            <div className="space-y-2">
+              <span className="text-[9px] font-black uppercase tracking-widest text-[#c5a059]">
+                {productoQuickView.categoria || 'VAULT STORE'}
+              </span>
+              <h3 className="text-xl font-bold uppercase text-white font-serif">{productoQuickView.nombre}</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed font-light">
+                {productoQuickView.descripcion || 'Artículo exclusivo seleccionado bajo el estándar de calidad y estilo Otro Flow.'}
+              </p>
+            </div>
 
-                <p className="text-xs text-zinc-400 font-light leading-relaxed">
-                  {productoQuickView.descripcion || 'Artículo exclusivo seleccionado bajo altos estándares de calidad y diseño.'}
-                </p>
-
-                <div className="text-xl font-mono font-black text-[#c5a059]">
-                  {productoQuickView.precio}
-                </div>
-
-                <button
-                  onClick={() => {
-                    handleSolicitarProducto(productoQuickView);
-                    setProductoQuickView(null);
-                  }}
-                  className="w-full bg-[#c5a059] hover:opacity-90 text-black font-black py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all shadow"
-                >
-                  SOLICITAR POR WHATSAPP
-                </button>
-              </div>
+            <div className="flex items-center justify-between pt-4 border-t border-white/10">
+              <span className="text-xl font-black font-mono text-[#c5a059]">
+                {productoQuickView.precio}
+              </span>
+              <button
+                onClick={() => {
+                  handleSolicitarProducto(productoQuickView);
+                  setProductoQuickView(null);
+                }}
+                className="bg-[#c5a059] text-black font-black text-xs px-6 py-3 rounded-xl uppercase tracking-widest hover:opacity-90 transition-all"
+              >
+                PEDIR POR WHATSAPP
+              </button>
             </div>
           </div>
         </div>
