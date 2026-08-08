@@ -89,25 +89,6 @@ const IconClock = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
   </svg>
 );
 
-const IconCopy = ({ className = "w-3.5 h-3.5" }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-  </svg>
-);
-
-const IconMapPin = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
-);
-
-const IconWhatsApp = ({ className = "w-6 h-6 fill-current" }) => (
-  <svg className={className} viewBox="0 0 24 24">
-    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-  </svg>
-);
-
 const IconX = ({ className = "w-5 h-5 text-zinc-400" }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -121,21 +102,12 @@ const IconEye = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
   </svg>
 );
 
-const SignatureSVG = ({ className = "h-12 text-[#c5a059]" }) => (
-  <svg className={className} viewBox="0 0 320 80" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-    <path d="M15 52 Q 35 12, 55 42 T 95 32 T 135 62 Q 155 22, 185 52 T 235 42 T 275 57 M 45 62 C 85 67, 125 67, 210 59" />
-  </svg>
-);
-
 export default function Home() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [modalReservaOpen, setModalReservaOpen] = useState(false);
   const [modalMembresiaOpen, setModalMembresiaOpen] = useState(false);
   const [productoQuickView, setProductoQuickView] = useState<Producto | null>(null);
-
-  // Modalidad de Membresía (Mensual vs Anual con 15% Descuento)
-  const [modalidadMembresia, setModalidadMembresia] = useState<'mensual' | 'anual'>('mensual');
 
   // Imágenes de alta resolución
   const [fotoHero, setFotoHero] = useState('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&auto=format&fit=crop&q=80');
@@ -150,20 +122,7 @@ export default function Home() {
   const [horaReserva, setHoraReserva] = useState('10:00 AM');
   const [direccionDomicilio, setDireccionDomicilio] = useState('');
 
-  // Formulario Membresía
-  const [planMembresia, setPlanMembresia] = useState<'individual' | 'duo'>('individual');
-  const [nombreMembresia, setNombreMembresia] = useState('');
-  const [telefonoMembresia, setTelefonoMembresia] = useState('');
-  const [copiadoCuenta, setCopiadoCuenta] = useState(false);
-
   const horariosDisponibles = ['09:00 AM', '10:30 AM', '12:00 PM', '02:00 PM', '03:30 PM', '05:00 PM', '06:30 PM'];
-
-  // Reseñas Reales para Social Proof
-  const reseñasGoogle: Resena[] = [
-    { id: 1, nombre: 'Carlos M. Rosario', rol: 'Socio VIP', comentario: 'La mejor experiencia de barbería en Piantini. Ezequiel capta el estilo exacto desde la primera consulta.', estrellas: 5, fecha: 'Hace 2 días' },
-    { id: 2, nombre: 'Ing. Fernando Guzmán', rol: 'Cliente Recurrente', comentario: 'Puntualidad británica y un ambiente súper privado. La cerveza fría al llegar marca la diferencia.', estrellas: 5, fecha: 'Hace 1 semana' },
-    { id: 3, nombre: 'Lic. Jean L. Tavárez', rol: 'Socio Duo', comentario: 'Tengo la membresía Duo con mi hermano. Nos ahorramos tiempo y la atención executive es impecable.', estrellas: 5, fecha: 'Hace 2 semanas' },
-  ];
 
   useEffect(() => {
     fetchProductosTienda();
@@ -293,59 +252,6 @@ export default function Home() {
     setModalReservaOpen(false);
   };
 
-  const handleSolicitarMembresiaWhatsApp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nombreMembresia || !telefonoMembresia) {
-      alert('Por favor completa tu nombre y número de teléfono.');
-      return;
-    }
-
-    const fechaInicio = new Date();
-    const fechaVencimiento = new Date();
-    fechaVencimiento.setDate(fechaInicio.getDate() + (modalidadMembresia === 'anual' ? 365 : 30));
-
-    const inicioFmt = fechaInicio.toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const vencimientoFmt = fechaVencimiento.toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-    const precioInd = modalidadMembresia === 'anual' ? 'RD$ 22,440/año (15% OFF)' : 'RD$ 2,200/mes';
-    const precioDuo = modalidadMembresia === 'anual' ? 'RD$ 40,800/año (15% OFF)' : 'RD$ 4,000/mes';
-
-    const nombrePlanTxt = planMembresia === 'individual' 
-      ? `PLAN INDIVIDUAL EXECUTIVE (${precioInd})` 
-      : `PLAN EXECUTIVE DUO (${precioDuo})`;
-
-    try {
-      await supabase.from('membresias').insert([
-        {
-          nombre_cliente: nombreMembresia,
-          telefono: telefonoMembresia,
-          plan: nombrePlanTxt,
-          metodo_pago: 'Transferencia Banco Popular',
-          fecha_inicio: inicioFmt,
-          fecha_vencimiento: vencimientoFmt,
-          estado: 'Pendiente Comprobante'
-        }
-      ]);
-    } catch (err) {
-      console.log('Error registrando membresía:', err);
-    }
-
-    const mensaje = `*NUEVA MEMBRESÍA VIP — OTRO FLOW*%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━%0A` +
-      `👤 *Socio:* ${nombreMembresia}%0A` +
-      `📞 *Teléfono:* ${telefonoMembresia}%0A` +
-      `💳 *Plan:* ${nombrePlanTxt}%0A` +
-      `🏦 *Método:* Transferencia Banco Popular (${DATOS_BANCO.numeroCuenta})%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━%0A` +
-      `📅 *Fecha de Inicio:* ${inicioFmt}%0A` +
-      `⌛ *FECHA DE VENCIMIENTO:* ${vencimientoFmt}%0A` +
-      `━━━━━━━━━━━━━━━━━━━━━%0A` +
-      `Adjunto aquí mi comprobante de transferencia bancaria para activar mi plan.`;
-
-    window.open(`https://wa.me/${TELEFONO_BARBERIA}?text=${mensaje}`, '_blank');
-    setModalMembresiaOpen(false);
-  };
-
   const handleSolicitarProducto = (prod: Producto) => {
     const mensaje = `*SOLICITUD STORE - OTRO FLOW*%0A` +
       `━━━━━━━━━━━━━━━━━━━━━%0A` +
@@ -353,14 +259,6 @@ export default function Home() {
       `💰 *Precio:* ${prod.precio}%0A` +
       `Hola, deseo consultar la disponibilidad y pedir este producto exclusivo.`;
     window.open(`https://wa.me/${TELEFONO_BARBERIA}?text=${mensaje}`, '_blank');
-  };
-
-  const copiarNumeroCuenta = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(DATOS_BANCO.numeroCuenta);
-      setCopiadoCuenta(true);
-      setTimeout(() => setCopiadoCuenta(false), 2500);
-    }
   };
 
   // Filtrado optimizado para que cada artículo se coloque exactamente en su categoría correspondiente
@@ -400,9 +298,7 @@ export default function Home() {
           <nav className="hidden lg:flex items-center gap-9 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
             <a href="#inicio" className="hover:text-[#c5a059] transition-colors">INICIO</a>
             <a href="#servicios" className="hover:text-[#c5a059] transition-colors">SERVICIOS</a>
-            <a href="#club" className="hover:text-[#c5a059] transition-colors">MEMBRESÍAS VIP</a>
             <a href="#store" className="hover:text-[#c5a059] transition-colors text-[#c5a059]">VAULT STORE</a>
-            <a href="#ubicacion" className="hover:text-[#c5a059] transition-colors">UBICACIÓN</a>
           </nav>
 
           <button
@@ -452,14 +348,6 @@ export default function Home() {
                 <IconCalendar className="w-4 h-4 text-black" />
                 <span>AGENDAR MI EXPERIENCIA</span>
               </button>
-
-              <a
-                href="#servicios"
-                className="text-xs font-black uppercase tracking-widest text-zinc-300 hover:text-[#c5a059] transition-colors flex items-center gap-3 group"
-              >
-                <span className="w-8 h-[1px] bg-zinc-700 group-hover:bg-[#c5a059] group-hover:w-12 transition-all" />
-                EXPLORAR TRATAMIENTOS
-              </a>
             </div>
           </div>
 
