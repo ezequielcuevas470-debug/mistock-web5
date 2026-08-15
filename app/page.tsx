@@ -125,7 +125,7 @@ export default function Home() {
       beneficios: [
         "4 Cortes de pelo al mes",
         "Perfilado básico incluido",
-        "Atención preferencial"
+        
       ],
       popular: false
     },
@@ -137,8 +137,8 @@ export default function Home() {
       beneficios: [
         "5 Cortes de pelo al mes",
         "Perfilado de barba incluido",
-        "10% de descuento en productos de la tienda",
-        "Atención preferencial sin cita previa"
+        "5% de descuento en productos de la tienda",
+        
       ],
       popular: true
     },
@@ -150,7 +150,6 @@ export default function Home() {
       beneficios: [
         "Cortes ilimitados durante el mes completo",
         "Incluye 1 acompañante (hijo, hermano, primo, etc.)",
-        "Servicios completos con toallas calientes",
         "Acceso directo vía WhatsApp con tu barbero"
       ],
       popular: false
@@ -462,15 +461,14 @@ export default function Home() {
               },
               {
                 titulo: 'CORTE + BARBA ROYAL',
-                desc: 'Experiencia completa de ritual facial, perfilado de barba y corte ejecutivo.',
                 duracion: '60 MIN',
                 precio: 'RD$650',
                 icono: <IconBarba />,
                 img: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&auto=format&fit=crop&q=80'
               },
               {
-                titulo: 'PERFILADO Y TRATAMIENTO',
-                desc: 'Alineación de barba a navaja con toalla vaporizada y bálsamos nutritivos.',
+                titulo: 'PERFILADO Y BARBA',
+                desc: 'Alineación de barba .',
                 duracion: '30 MIN',
                 precio: 'RD$350',
                 icono: <IconNavaja />,
@@ -707,7 +705,7 @@ export default function Home() {
                 </p>
                 <p className="flex items-start gap-3">
                   <IconClock className="w-5 h-5 text-[#c5a059] shrink-0 mt-0.5" />
-                  <span><strong>Horario:</strong> Lunes a Sábado de 9:00 AM a 8:00 PM. Domingos previa cita VIP.</span>
+                  <span><strong>Horario:</strong> Lunes a Sábado de 9:00 AM a 8:00 PM. Domingos 9:00 AM a 6:00.</span>
                 </p>
                 <p className="flex items-start gap-3">
                   <span className="text-[#c5a059] font-bold text-base shrink-0">📞</span>
