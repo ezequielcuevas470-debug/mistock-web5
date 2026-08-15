@@ -58,7 +58,6 @@ interface EstadoPago {
   readonly dias: number;
 }
 
-// Credenciales protegidas
 const USUARIO_ADMIN = process.env.NEXT_PUBLIC_ADMIN_USER || 'otroflow';
 const PASSWORD_ADMIN = process.env.NEXT_PUBLIC_ADMIN_PASS || 'barberia2026';
 const SESSION_KEY = 'admin_otro_flow_secure_session';
@@ -73,18 +72,15 @@ export default function AdminPage() {
   const usuarioId = useId();
   const passwordId = useId();
 
-  // Estados principales de datos
   const [productos, setProductos] = useState<readonly Producto[]>([]);
   const [citas, setCitas] = useState<readonly Cita[]>([]);
   const [transacciones, setTransacciones] = useState<readonly Transaccion[]>([]);
   const [membresias, setMembresias] = useState<readonly Membresia[]>([]);
 
-  // Configuración visual y multimedia
   const [imgHero, setImgHero] = useState<string>('');
   const [imgBarbero, setImgBarbero] = useState<string>('');
   const [galeriaImgs, setGaleriaImgs] = useState<readonly string[]>([]);
 
-  // Formularios de Productos
   const [nuevoNombre, setNuevoNombre] = useState<string>('');
   const [nuevoPrecio, setNuevoPrecio] = useState<string>('');
   const [nuevoStock, setNuevoStock] = useState<string>('');
@@ -93,7 +89,6 @@ export default function AdminPage() {
   const [nuevoDesc, setNuevoDesc] = useState<string>('');
   const [cargando, setCargando] = useState<boolean>(false);
 
-  // Estados para modo edición de productos
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [editNombre, setEditNombre] = useState<string>('');
   const [editPrecio, setEditPrecio] = useState<string>('');
@@ -111,22 +106,16 @@ export default function AdminPage() {
     "Ropa"
   ];
 
-  // Finanzas Manuales
   const [ingresoManual, setIngresoManual] = useState<string>('');
   const [conceptoIngreso, setConceptoIngreso] = useState<string>('');
   const [gastoManual, setGastoManual] = useState<string>('');
   const [conceptoGasto, setConceptoGasto] = useState<string>('');
 
-  // Modales de Socios VIP
   const [modalVIPOpen, setModalVIPOpen] = useState<boolean>(false);
   const [vipNombre, setVipNombre] = useState<string>('');
   const [vipTelefono, setVipTelefono] = useState<string>('');
   const [vipPlan, setVipPlan] = useState<string>('PLAN INDIVIDUAL EXECUTIVE (RD$ 2,200/mes)');
   const [vipFechaInicio, setVipFechaInicio] = useState<string>(() => new Date().toISOString().split('T')[0]);
-
-  // ==========================================
-  // EFECTOS Y CICLO DE VIDA
-  // ==========================================
 
   useEffect(() => {
     try {
@@ -171,7 +160,7 @@ export default function AdminPage() {
         });
       }
     } catch (error) {
-      console.error('Error sincronizando datos del panel administrativo:', error);
+      console.error('Error sincronizando datos:', error);
     }
   }, []);
 
@@ -180,10 +169,6 @@ export default function AdminPage() {
       fetchDatosAdmin();
     }
   }, [estaAutenticado, fetchDatosAdmin]);
-
-  // ==========================================
-  // MANEJO DE AUTENTICACIÓN
-  // ==========================================
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -212,10 +197,6 @@ export default function AdminPage() {
     setPasswordInput('');
   };
 
-  // ==========================================
-  // GESTIÓN DE CITAS Y SUS INGRESOS
-  // ==========================================
-
   const actualizarEstadoCita = async (id: number, nuevoEstado: string, precioServicioStr?: string) => {
     const { error: errorCita } = await supabase
       .from('citas')
@@ -223,11 +204,10 @@ export default function AdminPage() {
       .eq('id', id);
 
     if (errorCita) {
-      alert(`Error al actualizar estado de la cita: ${errorCita.message}`);
+      alert(`Error al actualizar estado: ${errorCita.message}`);
       return;
     }
 
-    // Si la cita se marca como "Completada" o "Confirmada" y trae asociado un costo, registramos automáticamente el ingreso
     if ((nuevoEstado === 'Completada' || nuevoEstado === 'Confirmada') && precioServicioStr) {
       const montoNumerico = parseFloat(precioServicioStr.replace(/[^\d.]/g, '')) || 0;
       if (montoNumerico > 0) {
@@ -247,22 +227,16 @@ export default function AdminPage() {
   };
 
   const eliminarCita = async (id: number) => {
-    if (!confirm('¿Desea eliminar esta cita del registro?')) return;
+    if (!confirm('¿Desea eliminar esta cita?')) return;
     const { error } = await supabase.from('citas').delete().eq('id', id);
     if (!error) {
       setCitas((prev) => prev.filter((c) => c.id !== id));
-    } else {
-      alert(`Error al eliminar cita: ${error.message}`);
     }
   };
 
-  // ==========================================
-  // GESTIÓN DE SOCIOS VIP
-  // ==========================================
-
   const obtenerEstadoPago = (fechaVencimientoStr: string): EstadoPago => {
     if (!fechaVencimientoStr) {
-      return { texto: 'Sin Fecha', color: 'bg-zinc-800 text-zinc-400', dias: 0 };
+      return { texto: 'Sin Fecha', color: 'bg-zinc-800/80 text-zinc-400 border border-zinc-700/50', dias: 0 };
     }
 
     let isoDateStr = fechaVencimientoStr;
@@ -282,19 +256,19 @@ export default function AdminPage() {
     if (diasRestantes < 0) {
       return {
         texto: `Vencido (${Math.abs(diasRestantes)}d)`,
-        color: 'bg-red-500/20 text-red-400 border border-red-500/40',
+        color: 'bg-red-500/10 text-red-400 border border-red-500/30 shadow-sm shadow-red-500/10',
         dias: diasRestantes,
       };
     } else if (diasRestantes <= 5) {
       return {
         texto: `Cobrar Hoy / ${diasRestantes}d`,
-        color: 'bg-amber-500/20 text-amber-400 border border-amber-500/40',
+        color: 'bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-sm shadow-amber-500/10',
         dias: diasRestantes,
       };
     } else {
       return {
         texto: `Al Día (${diasRestantes}d)`,
-        color: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40',
+        color: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-500/10',
         dias: diasRestantes,
       };
     }
@@ -308,7 +282,6 @@ export default function AdminPage() {
 
     const inicioFmt = inicio.toISOString().split('T')[0];
     const vencimientoFmt = vencimiento.toISOString().split('T')[0];
-
     const montoMembresia = vipPlan.includes('3,500') ? 3500 : 2200;
 
     const [membRes, finRes] = await Promise.all([
@@ -339,12 +312,12 @@ export default function AdminPage() {
       setVipTelefono('');
       fetchDatosAdmin();
     } else {
-      alert(`Error registrando socio VIP o su ingreso: ${membRes.error?.message || finRes.error?.message}`);
+      alert('Error registrando socio VIP.');
     }
   };
 
   const handleRenovarMembresia = async (vip: Membresia) => {
-    if (!confirm(`¿Confirmar renovación de mensualidad para ${vip.nombre_cliente} por 30 días adicionales?`)) return;
+    if (!confirm(`¿Confirmar renovación para ${vip.nombre_cliente}?`)) return;
 
     const hoy = new Date();
     const nuevoVencimiento = new Date(hoy);
@@ -371,37 +344,23 @@ export default function AdminPage() {
     ]);
 
     if (!updRes.error && !finRes.error) {
-      alert(`¡Mensualidad renovada y registrada en ingresos para ${vip.nombre_cliente}!`);
+      alert('¡Membresía renovada con éxito!');
       fetchDatosAdmin();
-    } else {
-      alert(`Error al renovar membresía: ${updRes.error?.message || finRes.error?.message}`);
     }
   };
 
   const handleEnviarRecordatorioVIPWA = (vip: Membresia) => {
-    const estado = obtenerEstadoPago(vip.fecha_vencimiento);
-    let msg = '';
-
-    if (estado.dias < 0) {
-      msg = `Hola *${vip.nombre_cliente}*, te saludamos de *OTRO FLOW BARBERSHOP* 💈.%0A%0ATu suscripción VIP (*${vip.plan}*) venció el *${vip.fecha_vencimiento}*.%0A%0AIndícanos si prefieres realizar transferencia o pasar por el local para mantener tus privilegios activos. ¡Quedamos atentos bro! 🔥`;
-    } else {
-      msg = `Hola *${vip.nombre_cliente}*, te saludamos de *OTRO FLOW BARBERSHOP* 💈.%0A%0ARecuerda que tu cuota del *${vip.plan}* vence próximamente (*${vip.fecha_vencimiento}*).%0A%0APuedes gestionar tu renovación para conservar tu atención preferencial. ¡Gracias por ser socio VIP! 🚀`;
-    }
-
+    const msg = `Hola *${vip.nombre_cliente}*, te saludamos de *OTRO FLOW BARBERSHOP* 💈 para recordarte tu membresía VIP (*${vip.plan}*). ¡Te esperamos!`;
     const telLimpio = vip.telefono.replace(/\D/g, '');
-    window.open(`https://wa.me/${telLimpio}?text=${msg}`, '_blank');
+    window.open(`https://wa.me/${telLimpio}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   const handleEliminarMembresia = async (id: number) => {
-    if (confirm('¿Está seguro de eliminar esta membresía del sistema?')) {
+    if (confirm('¿Eliminar membresía?')) {
       await supabase.from('membresias').delete().eq('id', id);
       fetchDatosAdmin();
     }
   };
-
-  // ==========================================
-  // GESTIÓN DE PRODUCTOS E INVENTARIO
-  // ==========================================
 
   const actualizarStock = async (id: number, cantidad: number) => {
     const productoActual = productos.find(p => p.id === id);
@@ -420,36 +379,33 @@ export default function AdminPage() {
     if (!nuevoNombre || !nuevoPrecio || !nuevoStock) return;
 
     setCargando(true);
-    const precioFormateado = nuevoPrecio.startsWith('RD$') ? nuevoPrecio : `${nuevoPrecio}`;
     const imgDefault = nuevaImg.trim() !== '' ? nuevaImg : 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&auto=format&fit=crop&q=60';
 
     const { error } = await supabase.from('productos').insert([
       {
         nombre: nuevoNombre,
-        precio: precioFormateado,
+        precio: nuevoPrecio,
         stock: parseInt(nuevoStock, 10) || 0,
         img: imgDefault,
         categoria: nuevaCategoria,
-        descripcion: nuevoDesc || 'Artículo exclusivo disponible en Otro Flow.',
+        descripcion: nuevoDesc || 'Artículo exclusivo.',
       },
     ]);
 
     setCargando(false);
     if (!error) {
-      alert('¡Producto agregado con éxito!');
+      alert('¡Producto agregado!');
       setNuevoNombre('');
       setNuevoPrecio('');
       setNuevoStock('');
       setNuevaImg('');
       setNuevoDesc('');
       fetchDatosAdmin();
-    } else {
-      alert(`Error al registrar el producto: ${error.message}`);
     }
   };
 
   const eliminarProducto = async (id: number) => {
-    if (!confirm('¿Desea eliminar este producto del inventario?')) return;
+    if (!confirm('¿Eliminar producto?')) return;
     const { error } = await supabase.from('productos').delete().eq('id', id);
     if (!error) {
       setProductos((prev) => prev.filter((p) => p.id !== id));
@@ -492,14 +448,8 @@ export default function AdminPage() {
         })
       );
       setEditandoId(null);
-    } else {
-      alert(`Error al actualizar el producto: ${error.message}`);
     }
   };
-
-  // ==========================================
-  // GESTIÓN DE FINANZAS Y CAJA
-  // ==========================================
 
   const registrarTransaccion = async (e: React.FormEvent<HTMLFormElement>, tipo: 'ingreso' | 'gasto') => {
     e.preventDefault();
@@ -525,8 +475,6 @@ export default function AdminPage() {
         setConceptoGasto('');
         setGastoManual('');
       }
-    } else if (error) {
-      alert(`Error al registrar la transacción: ${error.message}`);
     }
   };
 
@@ -541,16 +489,12 @@ export default function AdminPage() {
   const totalGastos = transacciones.filter((t) => t.tipo === 'gasto').reduce((acc, curr) => acc + curr.monto, 0);
   const gananciaNeta = totalIngresos - totalGastos;
 
-  // ==========================================
-  // RENDERIZADO DE INTERFACES (UI)
-  // ==========================================
-
   if (cargandoAuth) {
     return (
-      <main className="min-h-screen bg-[#070708] text-white flex items-center justify-center font-sans">
+      <main className="min-h-screen bg-[#030305] text-white flex items-center justify-center font-sans">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-xs uppercase tracking-widest text-zinc-400">Verificando protocolos de seguridad...</p>
+          <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-amber-500/20"></div>
+          <p className="text-xs uppercase tracking-[0.25em] text-zinc-400 font-semibold">Cargando Sistema...</p>
         </div>
       </main>
     );
@@ -558,38 +502,40 @@ export default function AdminPage() {
 
   if (!estaAutenticado) {
     return (
-      <main className="min-h-screen bg-[#070708] text-white flex items-center justify-center p-6 selection:bg-amber-500 selection:text-black">
-        <section aria-labelledby="auth-title" className="bg-neutral-900/90 border border-white/10 p-8 rounded-[2rem] shadow-2xl max-w-md w-full space-y-6 backdrop-blur-xl">
-          <header className="text-center space-y-2">
-            <span className="text-amber-400 font-bold tracking-[0.2em] text-xs uppercase bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
-              Área Restringida
+      <main className="min-h-screen bg-[#030305] text-white flex items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900/40 via-[#030305] to-[#030305]">
+        <section className="bg-[#0b0b0f]/90 border border-white/[0.08] p-8 sm:p-10 rounded-[2.5rem] shadow-2xl shadow-black/80 max-w-md w-full space-y-8 backdrop-blur-2xl">
+          <header className="text-center space-y-3">
+            <span className="text-amber-400 font-bold tracking-[0.25em] text-[10px] uppercase bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full shadow-inner">
+              Acceso Exclusivo Gerencial
             </span>
-            <h1 id="auth-title" className="text-2xl font-black mt-2 tracking-tight">Otro Flow — Autenticación Pro</h1>
-            <p className="text-zinc-400 text-xs">Ingrese sus credenciales administrativas para gestionar el sistema.</p>
+            <h1 className="text-2xl font-black tracking-tight mt-1 text-white">Otro Flow Pro</h1>
+            <p className="text-xs text-zinc-400">Introduce tus credenciales para administrar el negocio.</p>
           </header>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label htmlFor={usuarioId} className="block text-[11px] font-bold uppercase text-zinc-400 mb-1.5 ml-1">Usuario</label>
+              <label htmlFor={usuarioId} className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2 ml-1">Usuario</label>
               <input
                 id={usuarioId}
                 type="text"
                 value={usuarioInput}
                 onChange={(e) => setUsuarioInput(e.target.value)}
-                className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3.5 text-sm text-white focus:border-amber-400 outline-none transition-colors"
+                className="w-full bg-[#050507] border border-white/10 rounded-2xl p-4 text-sm text-white focus:border-amber-400 focus:ring-1 focus:ring-amber-400 outline-none transition-all placeholder:text-zinc-600"
+                placeholder="Nombre de usuario"
                 required
                 autoFocus
                 autoComplete="username"
               />
             </div>
             <div>
-              <label htmlFor={passwordId} className="block text-[11px] font-bold uppercase text-zinc-400 mb-1.5 ml-1">Contraseña</label>
+              <label htmlFor={passwordId} className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2 ml-1">Contraseña</label>
               <input
                 id={passwordId}
                 type="password"
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
-                className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3.5 text-sm text-white focus:border-amber-400 outline-none transition-colors"
+                className="w-full bg-[#050507] border border-white/10 rounded-2xl p-4 text-sm text-white focus:border-amber-400 focus:ring-1 focus:ring-amber-400 outline-none transition-all placeholder:text-zinc-600"
+                placeholder="••••••••••••"
                 required
                 autoComplete="current-password"
               />
@@ -597,285 +543,225 @@ export default function AdminPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-neutral-950 font-black py-4 rounded-xl text-xs uppercase tracking-widest transition-all shadow-lg shadow-amber-500/20 cursor-pointer"
+              className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-black py-4 rounded-2xl text-xs uppercase tracking-[0.2em] cursor-pointer shadow-xl shadow-amber-500/20 transition-all transform active:scale-[0.98]"
             >
-              {isPending ? 'Verificando...' : 'Desbloquear Panel 🔓'}
+              {isPending ? 'Verificando...' : 'Acceder al Panel 🚀'}
             </button>
           </form>
-
-          <footer className="text-center pt-2">
-            <a href="/" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">← Volver al sitio público</a>
-          </footer>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#070708] text-white p-6 md:p-12 max-w-7xl mx-auto space-y-10 selection:bg-amber-500 selection:text-black font-sans">
+    <main className="min-h-screen bg-[#030305] text-white p-6 md:p-12 max-w-7xl mx-auto space-y-12 selection:bg-amber-500 selection:text-black font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900/20 via-[#030305] to-[#030305]">
       
-      {/* CABECERA GENERAL */}
-      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
-        <div>
-          <span className="text-amber-400 font-bold tracking-[0.2em] text-xs uppercase bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
-            Panel Gerencial Pro
-          </span>
-          <h1 className="text-3xl font-black mt-2 tracking-tight">Otro Flow Barbershop</h1>
-          <p className="text-zinc-400 text-xs mt-1">Control centralizado de citas, finanzas, inventario y productos.</p>
+      {/* HEADER PRINCIPAL */}
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 border-b border-white/[0.08] pb-8">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-amber-400 font-extrabold tracking-[0.25em] text-[10px] uppercase bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+              Sistema Operativo Activo
+            </span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight mt-2 bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
+            Otro Flow Barbershop
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <a
             href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-white/10 hover:bg-white/20 text-white font-bold text-xs px-4 py-2.5 rounded-xl border border-white/10 transition-all"
+            className="bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 font-bold text-xs px-5 py-3 rounded-2xl border border-white/10 transition-all shadow-sm hover:border-white/20"
           >
-            Ver Web Pública →
+            Ver Web Pública ↗
           </a>
           <button
             onClick={handleLogout}
-            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs px-4 py-2.5 rounded-xl border border-red-500/20 transition-all cursor-pointer"
+            className="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs px-5 py-3 rounded-2xl border border-red-500/20 transition-all cursor-pointer shadow-sm"
           >
             Cerrar Sesión 🔒
           </button>
         </div>
       </header>
 
-      {/* MÉTRICAS PRINCIPALES */}
-      <section aria-label="Estadísticas Financieras" className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <article className="bg-neutral-900/50 border border-white/10 p-5 rounded-2xl shadow-lg">
-          <p className="text-zinc-400 text-xs font-bold uppercase">Ingresos Totales</p>
-          <p className="text-2xl font-black text-emerald-400 mt-1">
-            ${totalIngresos.toLocaleString()} <span className="text-xs text-zinc-500">RD</span>
-          </p>
+      {/* MÉTRICAS FINANCIERAS Y NEGOCIO */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <article className="bg-[#09090d]/80 border border-white/[0.08] p-6 rounded-3xl shadow-xl backdrop-blur-xl relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all"></div>
+          <p className="text-zinc-400 text-[11px] font-extrabold uppercase tracking-wider">Ingresos Totales</p>
+          <p className="text-3xl font-black text-emerald-400 mt-2 tracking-tight">${totalIngresos.toLocaleString()} <span className="text-sm font-bold text-emerald-500/80">RD$</span></p>
         </article>
-        <article className="bg-neutral-900/50 border border-white/10 p-5 rounded-2xl shadow-lg">
-          <p className="text-zinc-400 text-xs font-bold uppercase">Egresos / Gastos</p>
-          <p className="text-2xl font-black text-red-400 mt-1">
-            ${totalGastos.toLocaleString()} <span className="text-xs text-zinc-500">RD</span>
-          </p>
+
+        <article className="bg-[#09090d]/80 border border-white/[0.08] p-6 rounded-3xl shadow-xl backdrop-blur-xl relative overflow-hidden group hover:border-red-500/40 transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-2xl group-hover:bg-red-500/10 transition-all"></div>
+          <p className="text-zinc-400 text-[11px] font-extrabold uppercase tracking-wider">Egresos / Gastos</p>
+          <p className="text-3xl font-black text-red-400 mt-2 tracking-tight">${totalGastos.toLocaleString()} <span className="text-sm font-bold text-red-500/80">RD$</span></p>
         </article>
-        <article className="bg-neutral-900/50 border border-amber-500/30 p-5 rounded-2xl bg-gradient-to-br from-neutral-900/80 to-amber-950/20 shadow-lg">
-          <p className="text-amber-400 text-xs font-bold uppercase">Ganancia Neta</p>
-          <p className="text-2xl font-black text-amber-400 mt-1">
-            ${gananciaNeta.toLocaleString()} <span className="text-xs text-zinc-400">RD</span>
-          </p>
+
+        <article className="bg-gradient-to-br from-[#0b0b10] to-[#120d04] border border-amber-500/30 p-6 rounded-3xl shadow-xl backdrop-blur-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+          <p className="text-amber-400 text-[11px] font-extrabold uppercase tracking-wider">Ganancia Neta</p>
+          <p className="text-3xl font-black text-amber-400 mt-2 tracking-tight">${gananciaNeta.toLocaleString()} <span className="text-sm font-bold text-amber-500/80">RD$</span></p>
         </article>
-        <article className="bg-neutral-900/50 border border-white/10 p-5 rounded-2xl shadow-lg">
-          <p className="text-zinc-400 text-xs font-bold uppercase">Socios VIP Activos</p>
-          <p className="text-2xl font-black text-white mt-1">
-            {membresias.length} <span className="text-xs text-zinc-500">miembros</span>
-          </p>
+
+        <article className="bg-[#09090d]/80 border border-white/[0.08] p-6 rounded-3xl shadow-xl backdrop-blur-xl relative overflow-hidden group hover:border-amber-500/40 transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-all"></div>
+          <p className="text-zinc-400 text-[11px] font-extrabold uppercase tracking-wider">Socios VIP Activos</p>
+          <p className="text-3xl font-black text-white mt-2 tracking-tight">{membresias.length} <span className="text-sm font-bold text-zinc-400">miembros</span></p>
         </article>
       </section>
 
-      {/* ========================================== */}
-      {/* APARTADO DE FINANZAS Y CONTROL DE CAJA */}
-      {/* ========================================== */}
-      <section className="bg-neutral-900/80 border border-emerald-500/30 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
+      {/* CAMBIAR FOTO HERO DESDE PC */}
+      <section className="bg-[#09090d]/90 border border-amber-500/25 p-7 sm:p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-xl space-y-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
         <div>
-          <span className="text-xs font-bold tracking-widest text-emerald-400 uppercase">Control Financiero y Caja</span>
-          <h2 className="text-xl font-black mt-1">Registro de Ingresos y Egresos</h2>
-          <p className="text-zinc-400 text-xs mt-1">Monitorea y registra todo el dinero que entra y sale de la tienda en tiempo real.</p>
+          <span className="text-[10px] font-black tracking-[0.2em] text-amber-400 uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Personalización Visual</span>
+          <h2 className="text-2xl font-black mt-2 tracking-tight">Cambiar Foto de Perfil (Hero)</h2>
+          <p className="text-zinc-400 text-xs mt-1">Sube una imagen de alta calidad desde tu computadora para actualizar la portada del sitio web de forma instantánea.</p>
         </div>
 
-        {/* Formularios para Registrar Transacciones Manuales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          
-          {/* Registrar Ingreso */}
-          <form onSubmit={(e) => registrarTransaccion(e, 'ingreso')} className="bg-neutral-950 border border-emerald-500/20 p-5 rounded-2xl space-y-4">
+        <div className="flex flex-col sm:flex-row items-center gap-6 bg-[#050507] border border-white/[0.08] p-6 rounded-3xl shadow-inner">
+          <img 
+            src={imgHero || 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&auto=format&fit=crop&q=60'} 
+            alt="Hero actual" 
+            className="w-32 h-32 rounded-2xl object-cover border-2 border-white/10 shadow-lg bg-neutral-900" 
+          />
+          <div className="flex-1 w-full space-y-3">
+            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-300">Seleccionar nueva foto desde PC:</label>
+            <input 
+              type="file" 
+              accept="image/*"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const { data, error } = await supabase.storage
+                  .from('media')
+                  .upload(`hero-${Date.now()}.jpg`, file);
+
+                if (error) {
+                  alert("Error al subir la imagen: " + error.message);
+                  return;
+                }
+
+                const { data: publicUrlData } = supabase.storage.from('media').getPublicUrl(data.path);
+                const newUrl = publicUrlData.publicUrl;
+
+                await supabase.from('configuracion').upsert({ clave: 'img_hero', valor: newUrl });
+
+                alert("¡Foto actualizada con éxito!");
+                setImgHero(newUrl);
+              }}
+              className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-zinc-300 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:bg-amber-500 file:text-neutral-950 file:font-black file:cursor-pointer hover:file:bg-amber-400 transition-all cursor-pointer shadow-sm"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* FINANZAS */}
+      <section className="bg-[#09090d]/90 border border-emerald-500/25 p-7 sm:p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-xl space-y-8">
+        <div>
+          <span className="text-[10px] font-black tracking-[0.2em] text-emerald-400 uppercase bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Control Financiero & Caja</span>
+          <h2 className="text-2xl font-black mt-2 tracking-tight">Registro de Ingresos y Egresos</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={(e) => registrarTransaccion(e, 'ingreso')} className="bg-[#050507] border border-emerald-500/20 p-6 rounded-3xl space-y-4 shadow-inner">
             <h3 className="text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-              <span>➕</span> Registrar Nuevo Ingreso
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Registrar Nuevo Ingreso
             </h3>
-            
             <div>
-              <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Concepto / Motivo</label>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Concepto / Motivo</label>
               <input
                 type="text"
                 required
-                placeholder="Ej. Venta de Perfume o Corte Extra"
+                placeholder="Ej. Venta de Perfume"
                 value={conceptoIngreso}
                 onChange={(e) => setConceptoIngreso(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/10 rounded-xl px-3.5 py-3 text-xs text-white focus:border-emerald-400 outline-none"
+                className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-emerald-400 outline-none transition-all placeholder:text-zinc-600"
               />
             </div>
-
             <div>
-              <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Monto (RD$)</label>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Monto (RD$)</label>
               <input
                 type="number"
                 required
                 placeholder="Ej. 1500"
                 value={ingresoManual}
                 onChange={(e) => setIngresoManual(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/10 rounded-xl px-3.5 py-3 text-xs text-white focus:border-emerald-400 outline-none"
+                className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-emerald-400 outline-none transition-all placeholder:text-zinc-600"
               />
             </div>
-
-            <button
-              type="submit"
-              className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs py-3 rounded-xl uppercase tracking-widest transition-all cursor-pointer shadow-lg"
-            >
+            <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-black text-xs py-4 rounded-2xl uppercase tracking-[0.15em] cursor-pointer shadow-lg shadow-emerald-500/20 transition-all transform active:scale-[0.98]">
               Registrar Ingreso 💰
             </button>
           </form>
 
-          {/* Registrar Gasto */}
-          <form onSubmit={(e) => registrarTransaccion(e, 'gasto')} className="bg-neutral-950 border border-red-500/20 p-5 rounded-2xl space-y-4">
+          <form onSubmit={(e) => registrarTransaccion(e, 'gasto')} className="bg-[#050507] border border-red-500/20 p-6 rounded-3xl space-y-4 shadow-inner">
             <h3 className="text-xs font-black uppercase tracking-wider text-red-400 flex items-center gap-2">
-              <span>➖</span> Registrar Nuevo Gasto / Egreso
+              <span className="w-2 h-2 rounded-full bg-red-400"></span> Registrar Nuevo Gasto
             </h3>
-            
             <div>
-              <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Concepto / Gasto</label>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Concepto / Gasto</label>
               <input
                 type="text"
                 required
-                placeholder="Ej. Compra de Cuchillas o Suministros"
+                placeholder="Ej. Suministros o Alquiler"
                 value={conceptoGasto}
                 onChange={(e) => setConceptoGasto(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/10 rounded-xl px-3.5 py-3 text-xs text-white focus:border-red-400 outline-none"
+                className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-red-400 outline-none transition-all placeholder:text-zinc-600"
               />
             </div>
-
             <div>
-              <label className="block text-[10px] font-bold uppercase text-zinc-400 mb-1">Monto (RD$)</label>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Monto (RD$)</label>
               <input
                 type="number"
                 required
                 placeholder="Ej. 800"
                 value={gastoManual}
                 onChange={(e) => setGastoManual(e.target.value)}
-                className="w-full bg-neutral-900 border border-white/10 rounded-xl px-3.5 py-3 text-xs text-white focus:border-red-400 outline-none"
+                className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-red-400 outline-none transition-all placeholder:text-zinc-600"
               />
             </div>
-
-            <button
-              type="submit"
-              className="w-full bg-red-500 hover:bg-red-400 text-black font-black text-xs py-3 rounded-xl uppercase tracking-widest transition-all cursor-pointer shadow-lg"
-            >
+            <button type="submit" className="w-full bg-red-500 hover:bg-red-400 text-neutral-950 font-black text-xs py-4 rounded-2xl uppercase tracking-[0.15em] cursor-pointer shadow-lg shadow-red-500/20 transition-all transform active:scale-[0.98]">
               Registrar Egreso 🧾
             </button>
           </form>
-
         </div>
 
-        {/* Tabla Historial de Movimientos Financieros */}
-        <div className="pt-4 space-y-4">
-          <h3 className="text-xs font-bold tracking-widest text-zinc-300 uppercase">Historial de Movimientos de Caja</h3>
-          
-          {transacciones.length === 0 ? (
-            <p className="text-xs text-zinc-500 italic py-4">No hay transacciones registradas todavía.</p>
-          ) : (
-            <div className="overflow-x-auto max-h-96 overflow-y-auto rounded-2xl border border-white/10">
-              <table className="w-full text-left text-xs border-collapse bg-neutral-950">
-                <thead className="bg-neutral-900 sticky top-0 z-10 text-zinc-400 uppercase">
-                  <tr>
-                    <th className="p-3">Tipo</th>
-                    <th className="p-3">Concepto</th>
-                    <th className="p-3">Monto</th>
-                    <th className="p-3">Fecha</th>
-                    <th className="p-3 text-right">Acción</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 font-medium">
-                  {transacciones.map((t) => (
-                    <tr key={t.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="p-3">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
-                          t.tipo === 'ingreso' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                        }`}>
-                          {t.tipo}
-                        </span>
-                      </td>
-                      <td className="p-3 text-white font-semibold">{t.concepto}</td>
-                      <td className={`p-3 font-mono font-bold ${t.tipo === 'ingreso' ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {t.tipo === 'ingreso' ? '+' : '-'}$ {t.monto.toLocaleString()} RD$
-                      </td>
-                      <td className="p-3 text-zinc-400 font-mono">{t.fecha}</td>
-                      <td className="p-3 text-right">
-                        <button
-                          onClick={() => eliminarTransaccion(t.id)}
-                          className="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-2.5 py-1.5 rounded-lg border border-red-500/30 transition-all cursor-pointer"
-                          title="Eliminar registro"
-                        >
-                          ✕
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-      </section>
-
-      {/* ========================================== */}
-      {/* APARTADO DE GESTIÓN DE CITAS (CONFIRMAR/INGRESAR) */}
-      {/* ========================================== */}
-      <section className="bg-neutral-900/80 border border-amber-500/30 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
-        <div>
-          <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">Agenda de Clientes</span>
-          <h2 className="text-xl font-black mt-1">Control de Citas y Servicios</h2>
-          <p className="text-zinc-400 text-xs mt-1">Gestiona las reservas de los clientes. Al marcar una cita como "Confirmada" o "Completada", el ingreso se reflejará automáticamente en las finanzas de la tienda.</p>
-        </div>
-
-        {citas.length === 0 ? (
-          <p className="text-xs text-zinc-500 italic py-4">No hay citas registradas actualmente.</p>
-        ) : (
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
-            <table className="w-full text-left text-xs border-collapse bg-neutral-950">
-              <thead className="bg-neutral-900 text-zinc-400 uppercase">
+        {transacciones.length > 0 && (
+          <div className="overflow-x-auto max-h-96 rounded-2xl border border-white/10 shadow-inner">
+            <table className="w-full text-left text-xs bg-[#050507]">
+              <thead className="bg-[#0a0a0e] text-zinc-400 uppercase tracking-wider font-extrabold text-[10px]">
                 <tr>
-                  <th className="p-3">Cliente</th>
-                  <th className="p-3">Teléfono</th>
-                  <th className="p-3">Servicio</th>
-                  <th className="p-3">Barbero</th>
-                  <th className="p-3">Fecha y Hora</th>
-                  <th className="p-3">Estado</th>
-                  <th className="p-3 text-right">Acciones</th>
+                  <th className="p-4">Tipo</th>
+                  <th className="p-4">Concepto</th>
+                  <th className="p-4">Monto</th>
+                  <th className="p-4">Fecha</th>
+                  <th className="p-4 text-right">Acción</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 font-medium">
-                {citas.map((cita) => (
-                  <tr key={cita.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="p-3 font-bold text-white">{cita.nombre_cliente}</td>
-                    <td className="p-3 text-zinc-300 font-mono">{cita.telefono || 'N/D'}</td>
-                    <td className="p-3 text-amber-400 font-semibold">{cita.servicio}</td>
-                    <td className="p-3 text-zinc-300">{cita.barbero}</td>
-                    <td className="p-3 text-zinc-400 font-mono">{cita.fecha} — {cita.hora}</td>
-                    <td className="p-3">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                        cita.estado === 'Completada' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                        cita.estado === 'Confirmada' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                        'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+              <tbody className="divide-y divide-white/5">
+                {transacciones.map((t) => (
+                  <tr key={t.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="p-4">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                        t.tipo === 'ingreso' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
                       }`}>
-                        {cita.estado || 'Pendiente'}
+                        {t.tipo}
                       </span>
                     </td>
-                    <td className="p-3 text-right space-x-2">
-                      <button
-                        onClick={() => actualizarEstadoCita(cita.id, 'Confirmada', cita.servicio)}
-                        className="bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 font-bold px-2.5 py-1 rounded-lg border border-blue-500/30 transition-all cursor-pointer"
-                        title="Confirmar cita"
-                      >
-                        ✓ Confirmar
-                      </button>
-                      <button
-                        onClick={() => actualizarEstadoCita(cita.id, 'Completada', cita.servicio)}
-                        className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-bold px-2.5 py-1 rounded-lg border border-emerald-500/30 transition-all cursor-pointer"
-                        title="Completar cita y sumar a ingresos"
-                      >
-                        💰 Cobrar
-                      </button>
-                      <button
-                        onClick={() => eliminarCita(cita.id)}
-                        className="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-2.5 py-1 rounded-lg border border-red-500/30 transition-all cursor-pointer"
-                        title="Eliminar cita"
-                      >
-                        ✕
+                    <td className="p-4 font-semibold text-zinc-200">{t.concepto}</td>
+                    <td className={`p-4 font-black text-sm ${t.tipo === 'ingreso' ? 'text-emerald-400' : 'text-red-400'}`}>
+                      ${t.monto.toLocaleString()} RD$
+                    </td>
+                    <td className="p-4 text-zinc-400 font-medium">{t.fecha}</td>
+                    <td className="p-4 text-right">
+                      <button onClick={() => eliminarTransaccion(t.id)} className="text-red-400 bg-red-500/10 hover:bg-red-500/20 px-3 py-1.5 rounded-xl transition-all font-bold cursor-pointer border border-red-500/20">
+                        Eliminar
                       </button>
                     </td>
                   </tr>
@@ -886,297 +772,54 @@ export default function AdminPage() {
         )}
       </section>
 
-      {/* SECCIÓN: CREAR PRODUCTO */}
-      <section className="bg-neutral-900/80 border border-amber-500/30 p-6 sm:p-8 rounded-3xl shadow-2xl space-y-6">
-        <div>
-          <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">Inventario y Tienda</span>
-          <h2 className="text-xl font-black mt-1">Añadir Nuevo Producto</h2>
-        </div>
-
-        <form onSubmit={handleCrearProducto} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <input
-            type="text"
-            required
-            placeholder="Nombre del producto"
-            value={nuevoNombre}
-            onChange={(e) => setNuevoNombre(e.target.value)}
-            className="bg-neutral-950 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white focus:border-amber-400 outline-none"
-          />
-
-          <input
-            type="text"
-            required
-            placeholder="Precio (Ej. 1,500)"
-            value={nuevoPrecio}
-            onChange={(e) => setNuevoPrecio(e.target.value)}
-            className="bg-neutral-950 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white focus:border-amber-400 outline-none"
-          />
-
-          <input
-            type="number"
-            required
-            placeholder="Stock inicial"
-            value={nuevoStock}
-            onChange={(e) => setNuevoStock(e.target.value)}
-            className="bg-neutral-950 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white focus:border-amber-400 outline-none"
-          />
-
-          <input
-            type="url"
-            placeholder="Link URL de la imagen"
-            value={nuevaImg}
-            onChange={(e) => setNuevaImg(e.target.value)}
-            className="bg-neutral-950 border border-amber-500/40 rounded-xl px-4 py-3.5 text-xs text-white focus:border-amber-400 outline-none font-mono"
-          />
-
-          <select
-            value={nuevaCategoria}
-            onChange={(e) => setNuevaCategoria(e.target.value)}
-            className="bg-neutral-950 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white focus:border-amber-400 outline-none"
-          >
-            {categoriasDisponibles.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-
-          <div className="sm:col-span-2 lg:col-span-5">
-            <input
-              type="text"
-              placeholder="Descripción breve (Opcional)"
-              value={nuevoDesc}
-              onChange={(e) => setNuevoDesc(e.target.value)}
-              className="w-full bg-neutral-950 border border-white/10 rounded-xl px-4 py-3.5 text-xs text-white focus:border-amber-400 outline-none"
-            />
-          </div>
-
-          <div className="sm:col-span-2 lg:col-span-5 pt-2">
-            <button
-              type="submit"
-              disabled={cargando}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black text-xs py-4 rounded-xl uppercase tracking-widest transition-all shadow-lg cursor-pointer"
-            >
-              {cargando ? 'Guardando...' : '+ AÑADIR PRODUCTO'}
-            </button>
-          </div>
-        </form>
-      </section>
-
-      {/* GRILLA DE PRODUCTOS Y CONTROL DE STOCK */}
-      <section className="space-y-6">
-        <div>
-          <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">Inventario Actual</span>
-          <h2 className="text-xl font-black mt-1">Control de Stock y Productos</h2>
-        </div>
-
-        {productos.length === 0 ? (
-          <p className="text-xs text-zinc-500 italic py-4">No hay productos registrados en el inventario.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {productos.map((prod) => {
-              const estaEditando = editandoId === prod.id;
-
-              return (
-                <div 
-                  key={prod.id} 
-                  className="bg-neutral-900/60 border border-white/10 rounded-3xl p-5 flex flex-col justify-between shadow-xl hover:border-amber-500/40 transition-all"
-                >
-                  {estaEditando ? (
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Editando Producto</span>
-                        <button 
-                          onClick={() => setEditandoId(null)}
-                          className="text-neutral-400 hover:text-white text-xs cursor-pointer"
-                        >
-                          ✕ Cancelar
-                        </button>
-                      </div>
-
-                      <input 
-                        type="text" 
-                        value={editNombre} 
-                        onChange={(e) => setEditNombre(e.target.value)}
-                        placeholder="Nombre"
-                        className="w-full bg-neutral-950 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none focus:border-amber-400"
-                      />
-
-                      <div className="grid grid-cols-2 gap-2">
-                        <input 
-                          type="text" 
-                          value={editPrecio} 
-                          onChange={(e) => setEditPrecio(e.target.value)}
-                          placeholder="Precio"
-                          className="bg-neutral-950 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none focus:border-amber-400"
-                        />
-                        <input 
-                          type="number" 
-                          value={editStock} 
-                          onChange={(e) => setEditStock(e.target.value)}
-                          placeholder="Stock"
-                          className="bg-neutral-950 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none focus:border-amber-400"
-                        />
-                      </div>
-
-                      <input 
-                        type="url" 
-                        value={editImg} 
-                        onChange={(e) => setEditImg(e.target.value)}
-                        placeholder="URL de la imagen"
-                        className="w-full bg-neutral-950 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none focus:border-amber-400 font-mono"
-                      />
-
-                      <select 
-                        value={editCategoria} 
-                        onChange={(e) => setEditCategoria(e.target.value)}
-                        className="w-full bg-neutral-950 border border-white/10 rounded-lg p-2.5 text-xs text-white outline-none focus:border-amber-400"
-                      >
-                        {categoriasDisponibles.map((cat) => (
-                          <option key={cat} value={cat}>{cat}</option>
-                        ))}
-                      </select>
-
-                      <button 
-                        onClick={() => guardarEdicion(prod.id)}
-                        className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black text-xs py-2.5 rounded-lg uppercase tracking-wider transition-all cursor-pointer"
-                      >
-                        Guardar Cambios
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex gap-4 items-start">
-                        <div className="w-20 h-20 bg-neutral-950 rounded-2xl overflow-hidden border border-white/10 shrink-0 flex items-center justify-center">
-                          <img 
-                            src={prod.img && prod.img.trim() !== "" ? prod.img : "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&auto=format&fit=crop&q=60"} 
-                            alt={prod.nombre} 
-                            className="w-full h-full object-cover"
-                            onError={(e: any) => {
-                              e.target.onerror = null; 
-                              e.target.src = "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=500&auto=format&fit=crop&q=60";
-                            }}
-                          />
-                        </div>
-                        <div className="space-y-1 overflow-hidden flex-1">
-                          <div className="flex justify-between items-start">
-                            <h3 className="font-bold text-sm text-white truncate">{prod.nombre}</h3>
-                            <button
-                              onClick={() => iniciarEdicion(prod)}
-                              className="text-neutral-400 hover:text-amber-400 text-xs ml-2 transition-colors cursor-pointer"
-                              title="Editar producto"
-                            >
-                              ✏️
-                            </button>
-                          </div>
-                          <p className="text-amber-400 font-black text-sm">
-                            {prod.precio ? `RD$ ${prod.precio}` : <span className="text-neutral-500 text-xs">Sin precio</span>}
-                          </p>
-                          <span className="inline-block px-2 py-0.5 bg-neutral-800 text-[10px] text-neutral-400 rounded-md">
-                            {prod.categoria || "General"}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
-                        <span className="text-xs text-neutral-400 font-medium">
-                          Stock: <strong className="text-white text-sm">{prod.stock}</strong>
-                        </span>
-
-                        <div className="flex items-center gap-1.5 bg-neutral-950 p-1.5 rounded-xl border border-white/5">
-                          <button
-                            onClick={() => actualizarStock(prod.id, -1)}
-                            className="w-7 h-7 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center justify-center text-xs transition-colors cursor-pointer"
-                          >
-                            -
-                          </button>
-                          <button
-                            onClick={() => actualizarStock(prod.id, 1)}
-                            className="w-7 h-7 bg-neutral-800 hover:bg-neutral-700 rounded-lg flex items-center justify-center text-xs transition-colors cursor-pointer"
-                          >
-                            +
-                          </button>
-                          <button
-                            onClick={() => eliminarProducto(prod.id)}
-                            className="w-7 h-7 bg-red-950/60 hover:bg-red-900 text-red-400 rounded-lg flex items-center justify-center text-xs transition-colors ml-1 cursor-pointer"
-                            title="Eliminar producto"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* CONTROL DE SOCIOS VIP */}
-      <section className="bg-neutral-900/80 border border-amber-500/30 p-6 rounded-3xl shadow-xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* SOCIOS VIP */}
+      <section className="bg-[#09090d]/90 border border-amber-500/25 p-7 sm:p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-xl space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">Membresías Executive</span>
-            <h2 className="text-xl font-black mt-1">Control de Socios VIP y Vencimientos</h2>
+            <span className="text-[10px] font-black tracking-[0.2em] text-amber-400 uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Club Exclusivo</span>
+            <h2 className="text-2xl font-black mt-2 tracking-tight">Gestión de Socios VIP & Membresías</h2>
           </div>
-          <button
-            onClick={() => setModalVIPOpen(true)}
-            className="bg-amber-500 hover:bg-amber-400 text-black font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider transition-all shadow-lg cursor-pointer"
-          >
-            + Registrar Socio VIP
+          <button onClick={() => setModalVIPOpen(true)} className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black text-xs px-6 py-4 rounded-2xl uppercase tracking-[0.15em] cursor-pointer shadow-lg shadow-amber-500/20 transition-all transform active:scale-[0.98]">
+            ✨ Registrar Nuevo Socio
           </button>
         </div>
 
-        {membresias.length === 0 ? (
-          <p className="text-xs text-zinc-500 italic py-4">No hay membresías VIP activas registradas actualmente.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-white/10 text-zinc-400 uppercase">
-                  <th className="p-3">Cliente VIP</th>
-                  <th className="p-3">Teléfono</th>
-                  <th className="p-3">Plan</th>
-                  <th className="p-3">Vencimiento</th>
-                  <th className="p-3">Estado de Pago</th>
-                  <th className="p-3 text-right">Acciones</th>
+        {membresias.length > 0 && (
+          <div className="overflow-x-auto rounded-2xl border border-white/10 shadow-inner">
+            <table className="w-full text-left text-xs bg-[#050507]">
+              <thead className="bg-[#0a0a0e] text-zinc-400 uppercase tracking-wider font-extrabold text-[10px]">
+                <tr>
+                  <th className="p-4">Cliente</th>
+                  <th className="p-4">Teléfono</th>
+                  <th className="p-4">Plan VIP</th>
+                  <th className="p-4">Vencimiento</th>
+                  <th className="p-4">Estado</th>
+                  <th className="p-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 font-medium">
+              <tbody className="divide-y divide-white/5">
                 {membresias.map((vip) => {
-                  const status = obtenerEstadoPago(vip.fecha_vencimiento);
+                  const estadoPago = obtenerEstadoPago(vip.fecha_vencimiento);
                   return (
                     <tr key={vip.id} className="hover:bg-white/[0.02] transition-colors">
-                      <td className="p-3 font-bold text-white">{vip.nombre_cliente}</td>
-                      <td className="p-3 text-zinc-300 font-mono">{vip.telefono}</td>
-                      <td className="p-3 text-amber-400">{vip.plan}</td>
-                      <td className="p-3 text-zinc-300 font-mono">{vip.fecha_vencimiento}</td>
-                      <td className="p-3">
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${status.color}`}>
-                          {status.texto}
+                      <td className="p-4 font-bold text-white text-sm">{vip.nombre_cliente}</td>
+                      <td className="p-4 text-zinc-300 font-mono">{vip.telefono}</td>
+                      <td className="p-4 text-amber-400 font-bold">{vip.plan}</td>
+                      <td className="p-4 text-zinc-300 font-medium">{vip.fecha_vencimiento}</td>
+                      <td className="p-4">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${estadoPago.color}`}>
+                          {estadoPago.texto}
                         </span>
                       </td>
-                      <td className="p-3 text-right space-x-2">
-                        <button
-                          onClick={() => handleEnviarRecordatorioVIPWA(vip)}
-                          className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 font-bold px-3 py-1.5 rounded-lg border border-emerald-500/30 transition-all cursor-pointer"
-                          title="Enviar aviso por WhatsApp"
-                        >
+                      <td className="p-4 text-right space-x-2">
+                        <button onClick={() => handleEnviarRecordatorioVIPWA(vip)} className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 px-3.5 py-2 rounded-xl font-bold cursor-pointer transition-all">
                           💬 WhatsApp
                         </button>
-                        <button
-                          onClick={() => handleRenovarMembresia(vip)}
-                          className="bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 font-bold px-3 py-1.5 rounded-lg border border-amber-500/30 transition-all cursor-pointer"
-                          title="Renovar por 30 días"
-                        >
+                        <button onClick={() => handleRenovarMembresia(vip)} className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 px-3.5 py-2 rounded-xl font-bold cursor-pointer transition-all">
                           🔄 Renovar
                         </button>
-                        <button
-                          onClick={() => handleEliminarMembresia(vip.id)}
-                          className="bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-2.5 py-1.5 rounded-lg border border-red-500/30 transition-all cursor-pointer"
-                          title="Eliminar socio"
-                        >
-                          ✕
+                        <button onClick={() => handleEliminarMembresia(vip.id)} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3 py-2 rounded-xl cursor-pointer transition-all">
+                          🗑️
                         </button>
                       </td>
                     </tr>
@@ -1188,78 +831,214 @@ export default function AdminPage() {
         )}
       </section>
 
-      {/* MODAL NUEVO SOCIO VIP */}
+      {/* MODAL VIP */}
       {modalVIPOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-neutral-900 border border-white/10 p-6 sm:p-8 rounded-3xl max-w-md w-full space-y-6 shadow-2xl">
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-[#0b0b0f] border border-amber-500/30 p-8 rounded-[2.5rem] max-w-lg w-full space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-black text-white">Registrar Nuevo Socio VIP</h3>
-              <button 
-                onClick={() => setModalVIPOpen(false)}
-                className="text-zinc-400 hover:text-white text-xs cursor-pointer"
-              >
-                ✕ Cerrar
-              </button>
+              <div>
+                <span className="text-[10px] font-black tracking-widest text-amber-400 uppercase">Membresías</span>
+                <h3 className="text-xl font-black uppercase tracking-tight mt-1 text-white">Registrar Socio VIP</h3>
+              </div>
+              <button onClick={() => setModalVIPOpen(false)} className="text-zinc-400 bg-white/5 hover:bg-white/10 w-9 h-9 rounded-2xl flex items-center justify-center font-bold cursor-pointer border border-white/10">✕</button>
             </div>
-
             <form onSubmit={handleGuardarNuevoVIP} className="space-y-4">
               <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Nombre Completo</label>
-                <input
-                  type="text"
-                  required
-                  value={vipNombre}
-                  onChange={(e) => setVipNombre(e.target.value)}
-                  placeholder="Ej. Carlos Manuel"
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
-                />
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Nombre Completo</label>
+                <input type="text" required placeholder="Ej. Carlos Santana" value={vipNombre} onChange={(e) => setVipNombre(e.target.value)} className="w-full bg-[#050507] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none" />
               </div>
-
               <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Teléfono / WhatsApp</label>
-                <input
-                  type="text"
-                  required
-                  value={vipTelefono}
-                  onChange={(e) => setVipTelefono(e.target.value)}
-                  placeholder="Ej. 8090000000"
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
-                />
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Teléfono</label>
+                <input type="text" required placeholder="809-000-0000" value={vipTelefono} onChange={(e) => setVipTelefono(e.target.value)} className="w-full bg-[#050507] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none font-mono" />
               </div>
-
               <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Seleccionar Plan</label>
-                <select
-                  value={vipPlan}
-                  onChange={(e) => setVipPlan(e.target.value)}
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
-                >
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Plan VIP</label>
+                <select value={vipPlan} onChange={(e) => setVipPlan(e.target.value)} className="w-full bg-[#050507] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none cursor-pointer">
                   <option value="PLAN INDIVIDUAL EXECUTIVE (RD$ 2,200/mes)">PLAN INDIVIDUAL EXECUTIVE (RD$ 2,200/mes)</option>
-                  <option value="PLAN VIP PREMIUM (RD$ 3,500/mes)">PLAN VIP PREMIUM (RD$ 3,500/mes)</option>
+                  <option value="PLAN ELITE DUO (RD$ 3,500/mes)">PLAN ELITE DUO (RD$ 3,500/mes)</option>
                 </select>
               </div>
-
               <div>
-                <label className="block text-[11px] font-bold uppercase text-zinc-400 mb-1">Fecha de Inicio</label>
-                <input
-                  type="date"
-                  required
-                  value={vipFechaInicio}
-                  onChange={(e) => setVipFechaInicio(e.target.value)}
-                  className="w-full bg-neutral-950 border border-white/10 rounded-xl p-3 text-xs text-white focus:border-amber-400 outline-none"
-                />
+                <label className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Fecha de Inicio</label>
+                <input type="date" required value={vipFechaInicio} onChange={(e) => setVipFechaInicio(e.target.value)} className="w-full bg-[#050507] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none cursor-pointer" />
               </div>
-
-              <button
-                type="submit"
-                className="w-full bg-amber-500 hover:bg-amber-400 text-black font-black text-xs py-3.5 rounded-xl uppercase tracking-widest transition-all cursor-pointer shadow-lg"
-              >
-                Guardar Suscripción VIP (Registra Ingreso en Caja)
+              <button type="submit" className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black text-xs py-4 rounded-2xl uppercase tracking-[0.15em] cursor-pointer shadow-lg shadow-amber-500/20 transition-all transform active:scale-[0.98]">
+                Guardar Suscripción VIP 🚀
               </button>
             </form>
           </div>
         </div>
       )}
+
+      {/* CITAS */}
+      <section className="bg-[#09090d]/90 border border-white/[0.08] p-7 sm:p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-xl space-y-6">
+        <div>
+          <span className="text-[10px] font-black tracking-[0.2em] text-amber-400 uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Agenda y Turnos</span>
+          <h2 className="text-2xl font-black mt-2 tracking-tight">Gestión de Citas en Tiempo Real</h2>
+        </div>
+
+        {citas.length > 0 && (
+          <div className="overflow-x-auto rounded-2xl border border-white/10 shadow-inner">
+            <table className="w-full text-left text-xs bg-[#050507]">
+              <thead className="bg-[#0a0a0e] text-zinc-400 uppercase tracking-wider font-extrabold text-[10px]">
+                <tr>
+                  <th className="p-4">Cliente</th>
+                  <th className="p-4">Teléfono</th>
+                  <th className="p-4">Servicio</th>
+                  <th className="p-4">Fecha y Hora</th>
+                  <th className="p-4">Estado</th>
+                  <th className="p-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {citas.map((cita) => (
+                  <tr key={cita.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="p-4 font-bold text-white text-sm">{cita.nombre_cliente}</td>
+                    <td className="p-4 text-zinc-300 font-mono">{cita.telefono || 'N/D'}</td>
+                    <td className="p-4">
+                      <div className="font-bold text-zinc-200">{cita.servicio}</div>
+                      <div className="text-[10px] text-amber-400 font-semibold mt-0.5">Barbero: {cita.barbero}</div>
+                    </td>
+                    <td className="p-4 text-zinc-300">
+                      <div className="font-medium">{cita.fecha}</div>
+                      <div className="text-amber-400 font-black mt-0.5">{cita.hora}</div>
+                    </td>
+                    <td className="p-4">
+                      <select
+                        value={cita.estado}
+                        onChange={(e) => actualizarEstadoCita(cita.id, e.target.value, '1500')}
+                        className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0e0e14] text-white border border-white/10 cursor-pointer shadow-sm hover:border-amber-400/50 transition-all"
+                      >
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="Confirmada">Confirmada</option>
+                        <option value="Completada">Completada (Caja)</option>
+                        <option value="Cancelada">Cancelada</option>
+                      </select>
+                    </td>
+                    <td className="p-4 text-right space-x-2">
+                      <button onClick={() => eliminarCita(cita.id)} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-3.5 py-2 rounded-xl cursor-pointer transition-all font-bold">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* PRODUCTOS E INVENTARIO */}
+      <section className="bg-[#09090d]/90 border border-white/[0.08] p-7 sm:p-8 rounded-[2.5rem] shadow-2xl backdrop-blur-xl space-y-8">
+        <div>
+          <span className="text-[10px] font-black tracking-[0.2em] text-amber-400 uppercase bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Tienda & Store</span>
+          <h2 className="text-2xl font-black mt-2 tracking-tight">Inventario y Catálogo de Productos</h2>
+        </div>
+
+        <form onSubmit={handleCrearProducto} className="bg-[#050507] border border-white/[0.08] p-6 sm:p-8 rounded-[2rem] space-y-5 shadow-inner">
+          <h3 className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400"></span> Agregar Nuevo Artículo al Inventario
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Nombre</label>
+              <input type="text" required placeholder="Ej. Perfume Tom Ford" value={nuevoNombre} onChange={(e) => setNuevoNombre(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Precio</label>
+              <input type="text" required placeholder="RD$ 2,500" value={nuevoPrecio} onChange={(e) => setNuevoPrecio(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none" />
+            </div>
+            <div>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Stock Inicial</label>
+              <input type="number" required placeholder="10" value={nuevoStock} onChange={(e) => setNuevoStock(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none" />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">Categoría</label>
+              <select value={nuevaCategoria} onChange={(e) => setNuevaCategoria(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none cursor-pointer">
+                {categoriasDisponibles.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 mb-2">URL Imagen</label>
+              <input type="url" placeholder="https://images.unsplash.com/..." value={nuevaImg} onChange={(e) => setNuevaImg(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-amber-400 outline-none" />
+            </div>
+          </div>
+          <button type="submit" disabled={cargando} className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black text-xs py-4 rounded-2xl uppercase tracking-[0.15em] cursor-pointer shadow-lg shadow-amber-500/20 transition-all transform active:scale-[0.98]">
+            {cargando ? 'Guardando...' : 'Publicar Producto 🛍️'}
+          </button>
+        </form>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pt-2">
+          {productos.map((prod) => (
+            <div key={prod.id} className="bg-[#050507] border border-white/[0.08] hover:border-amber-500/30 rounded-3xl p-5 flex flex-col justify-between space-y-5 shadow-xl transition-all group">
+              {editandoId === prod.id ? (
+                <div className="space-y-3.5">
+                  <div>
+                    <label className="text-[10px] uppercase font-extrabold tracking-wider text-zinc-400 mb-1 block">Nombre</label>
+                    <input type="text" value={editNombre} onChange={(e) => setEditNombre(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-xl p-3 text-xs text-white" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] uppercase font-extrabold tracking-wider text-zinc-400 mb-1 block">Precio</label>
+                      <input type="text" value={editPrecio} onChange={(e) => setEditPrecio(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-xl p-3 text-xs text-white" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase font-extrabold tracking-wider text-zinc-400 mb-1 block">Stock</label>
+                      <input type="number" value={editStock} onChange={(e) => setEditStock(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-xl p-3 text-xs text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase font-extrabold tracking-wider text-zinc-400 mb-1 block">Categoría</label>
+                    <select value={editCategoria} onChange={(e) => setEditCategoria(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-xl p-3 text-xs text-white cursor-pointer">
+                      {categoriasDisponibles.map((cat) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase font-extrabold tracking-wider text-zinc-400 mb-1 block">URL Imagen</label>
+                    <input type="text" value={editImg} onChange={(e) => setEditImg(e.target.value)} className="w-full bg-[#0a0a0e] border border-white/10 rounded-xl p-3 text-xs text-white" />
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <button onClick={() => guardarEdicion(prod.id)} className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs py-3 rounded-xl cursor-pointer transition-all">Guardar</button>
+                    <button onClick={() => setEditandoId(null)} className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs py-3 rounded-xl cursor-pointer transition-all">Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-start gap-4">
+                    <img src={prod.img} alt={prod.nombre} className="w-20 h-20 rounded-2xl object-cover border border-white/10 bg-neutral-900 shadow-md group-hover:scale-105 transition-transform" />
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <span className="text-[9px] font-black tracking-widest text-amber-400 uppercase bg-amber-500/10 px-2.5 py-0.5 rounded-md border border-amber-500/20">
+                        {prod.categoria || 'General'}
+                      </span>
+                      <h4 className="font-bold text-sm truncate text-white pt-1">{prod.nombre}</h4>
+                      <p className="text-amber-400 font-black text-sm">{prod.precio}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs">
+                    <span className="text-zinc-400">Stock disponible: <strong className="text-white font-mono font-bold text-sm">{prod.stock}</strong></span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => actualizarStock(prod.id, -1)} className="w-8 h-8 bg-white/5 hover:bg-white/10 rounded-xl font-bold cursor-pointer border border-white/10 transition-all flex items-center justify-center">-</button>
+                      <button onClick={() => actualizarStock(prod.id, 1)} className="w-8 h-8 bg-white/5 hover:bg-white/10 rounded-xl font-bold cursor-pointer border border-white/10 transition-all flex items-center justify-center">+</button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 pt-1">
+                    <button onClick={() => iniciarEdicion(prod)} className="flex-1 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 text-xs font-bold py-2.5 rounded-2xl border border-white/10 cursor-pointer transition-all">✏️ Editar</button>
+                    <button onClick={() => eliminarProducto(prod.id)} className="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold px-4 py-2.5 rounded-2xl border border-red-500/20 cursor-pointer transition-all">🗑️</button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
 
     </main>
   );

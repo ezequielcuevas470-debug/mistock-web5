@@ -21,9 +21,10 @@ interface Producto {
   detalles?: string[];
 }
 
-// ⚙️ DATOS OFICIALES
+// ⚙️ DATOS OFICIALES Y DATOS BANCARIOS PARA DEPÓSITO
 const TELEFONO_BARBERIA = '8492844395';
-const UBICACION_TIENDA = 'Villa Carmen, Santo Domingo Este, R.D.';
+const UBICACION_TIENDA = 'Hainamosa, C. Hermanas Mirabal, Santo Domingo Este';
+const INFO_BANCO = 'Cuenta Corriente Popular #830947628 a nombre de Ezequiel Peña Cuevas';
 
 // --- ICONOS VECTORIALES ---
 const IconTijeras = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
@@ -82,10 +83,18 @@ const IconEye = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
   </svg>
 );
 
+const IconPaperclip = ({ className = "w-4 h-4 text-[#c5a059]" }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+  </svg>
+);
+
 export default function Home() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [modalReservaOpen, setModalReservaOpen] = useState(false);
+  const [modalMembresiaOpen, setModalMembresiaOpen] = useState(false);
+  const [planSeleccionado, setPlanSeleccionado] = useState('Plan 2');
   const [productoQuickView, setProductoQuickView] = useState<Producto | null>(null);
 
   const [fotoHero, setFotoHero] = useState('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&auto=format&fit=crop&q=80');
@@ -99,7 +108,54 @@ export default function Home() {
   const [horaReserva, setHoraReserva] = useState('10:00 AM');
   const [direccionDomicilio, setDireccionDomicilio] = useState('');
 
+  // Formulario Membresía
+  const [nombreMembresia, setNombreMembresia] = useState('');
+  const [telefonoMembresia, setTelefonoMembresia] = useState('');
+  const [archivoComprobante, setArchivoComprobante] = useState<File | null>(null);
+  const [codigoVerificacion, setCodigoVerificacion] = useState('');
+
   const horariosDisponibles = ['09:00 AM', '10:30 AM', '12:00 PM', '02:00 PM', '03:30 PM', '05:00 PM', '06:30 PM'];
+
+  const membresias = [
+    {
+      titulo: "Plan 1",
+      precio: "RD$ 800",
+      frecuencia: "Mensual",
+      descripcion: "Ideal para mantener tu estilo fresco todo el mes.",
+      beneficios: [
+        "4 Cortes de pelo al mes",
+        "Perfilado básico incluido",
+        "Atención preferencial"
+      ],
+      popular: false
+    },
+    {
+      titulo: "Plan 2",
+      precio: "RD$ 1,500",
+      frecuencia: "Mensual",
+      descripcion: "La opción preferida para el cuidado constante.",
+      beneficios: [
+        "5 Cortes de pelo al mes",
+        "Perfilado de barba incluido",
+        "10% de descuento en productos de la tienda",
+        "Atención preferencial sin cita previa"
+      ],
+      popular: true
+    },
+    {
+      titulo: "Plan 3",
+      precio: "RD$ 2,500",
+      frecuencia: "Mensual",
+      descripcion: "Exclusividad total para ti y un acompañante.",
+      beneficios: [
+        "Cortes ilimitados durante el mes completo",
+        "Incluye 1 acompañante (hijo, hermano, primo, etc.)",
+        "Servicios completos con toallas calientes",
+        "Acceso directo vía WhatsApp con tu barbero"
+      ],
+      popular: false
+    }
+  ];
 
   useEffect(() => {
     fetchProductosTienda();
@@ -171,7 +227,7 @@ export default function Home() {
             stock: 4, 
             categoria: 'Perfumes', 
             exclusivo: true,
-            descripcion: 'Extracto de perfume intenso con notas de madera de cedro, ámbar gris, bergamota y fondo de cuero ahumado.'
+            descripcion: 'Extracto de perfume intenso con notas de madera de cedro, ámbar gris, bergarnota y fondo de cuero ahumado.'
           },
         ]);
       }
@@ -224,6 +280,47 @@ export default function Home() {
     setModalReservaOpen(false);
   };
 
+  const handleRegistrarMembresia = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nombreMembresia || !telefonoMembresia) {
+      alert('Por favor completa los campos obligatorios.');
+      return;
+    }
+
+    try {
+      await supabase.from('membresias').insert([
+        {
+          nombre_cliente: nombreMembresia,
+          telefono: telefonoMembresia,
+          plan: planSeleccionado,
+          codigo_verificacion: codigoVerificacion || 'N/A',
+          estado: 'Pendiente de Pago'
+        }
+      ]);
+    } catch (e) {
+      console.error(e);
+    }
+
+    let mensaje = `*SOLICITUD DE MEMBRESÍA VIP*%0A` +
+      `━━━━━━━━━━━━━━━━━━━━━%0A` +
+      `👑 *Plan Elegido:* ${planSeleccionado}%0A` +
+      `👤 *Cliente:* ${nombreMembresia}%0A` +
+      `📞 *Teléfono:* ${telefonoMembresia}%0A`;
+
+    if (codigoVerificacion) {
+      mensaje += `🔐 *Código Comprobante:* ${codigoVerificacion}%0A`;
+    }
+
+    mensaje += `%0A📌 *Nota:* Ya realicé el depósito a la cuenta corriente Popular (#830947628) a nombre de Ezequiel Peña Cuevas. Envío mi comprobante de pago adjunto.`;
+
+    window.open(`https://wa.me/${TELEFONO_BARBERIA}?text=${mensaje}`, '_blank');
+    setModalMembresiaOpen(false);
+    setNombreMembresia('');
+    setTelefonoMembresia('');
+    setArchivoComprobante(null);
+    setCodigoVerificacion('');
+  };
+
   const handleSolicitarProducto = (prod: Producto) => {
     const mensaje = `*SOLICITUD STORE - OTRO FLOW*%0A` +
       `━━━━━━━━━━━━━━━━━━━━━%0A` +
@@ -251,7 +348,7 @@ export default function Home() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span>ABIERTO HOY EN VILLA CARMEN</span>
+          <span>ABIERTO HOY EN HAINAMOSA</span>
         </div>
         <span className="hidden sm:inline text-white/20">•</span>
         <div className="flex items-center gap-1.5 text-zinc-300">
@@ -276,13 +373,14 @@ export default function Home() {
           <nav className="hidden lg:flex items-center gap-9 text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
             <a href="#inicio" className="hover:text-[#c5a059] transition-colors">INICIO</a>
             <a href="#servicios" className="hover:text-[#c5a059] transition-colors">SERVICIOS</a>
+            <a href="#membresias" className="hover:text-[#c5a059] transition-colors">MEMBRESÍAS</a>
             <a href="#store" className="hover:text-[#c5a059] transition-colors text-[#c5a059]">VAULT STORE</a>
             <a href="#ubicacion" className="hover:text-[#c5a059] transition-colors">UBICACIÓN</a>
           </nav>
 
           <button
             onClick={() => setModalReservaOpen(true)}
-            className="relative group overflow-hidden rounded-xl p-[1px] focus:outline-none"
+            className="relative group overflow-hidden rounded-xl p-[1px] focus:outline-none cursor-pointer"
           >
             <span className="absolute inset-0 bg-gradient-to-r from-amber-500 via-[#c5a059] to-amber-700 rounded-xl" />
             <div className="relative px-5 py-2.5 bg-[#0a0a0e] rounded-[11px] transition-all duration-300 group-hover:bg-transparent">
@@ -305,7 +403,7 @@ export default function Home() {
           <div className="lg:col-span-7 space-y-8 z-10">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#c5a059]/30 bg-[#12100b] text-[9px] font-black tracking-[0.3em] text-[#c5a059] uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-[#c5a059]" />
-              SANTO DOMINGO ESTE • VILLA CARMEN
+              HAINAMOSA • SANTO DOMINGO ESTE
             </div>
 
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight uppercase leading-[0.92] font-serif text-white">
@@ -316,13 +414,13 @@ export default function Home() {
             </h1>
 
             <p className="text-zinc-400 text-xs sm:text-sm max-w-lg leading-relaxed font-light tracking-wide">
-              Barbería ejecutiva de alto nivel en Villa Carmen, S.D.E. Cuidado personal superior, ambiente exclusivo con bebidas de cortesía y atención personalizada por Ezequiel Cuevas.
+              Barbería ejecutiva de alto nivel en Hainamosa ({UBICACION_TIENDA}). Cuidado personal superior, ambiente exclusivo y atención personalizada por Ezequiel Cuevas.
             </p>
 
             <div className="flex flex-wrap items-center gap-6 pt-2">
               <button
                 onClick={() => setModalReservaOpen(true)}
-                className="bg-gradient-to-r from-[#d4af37] via-[#c5a059] to-[#8a6d3b] hover:opacity-95 text-black font-black text-xs px-9 py-4 rounded-xl uppercase tracking-widest transition-all shadow-[0_0_35px_rgba(197,160,89,0.3)] flex items-center gap-3"
+                className="bg-gradient-to-r from-[#d4af37] via-[#c5a059] to-[#8a6d3b] hover:opacity-95 text-black font-black text-xs px-9 py-4 rounded-xl uppercase tracking-widest transition-all shadow-[0_0_35px_rgba(197,160,89,0.3)] flex items-center gap-3 cursor-pointer"
               >
                 <IconCalendar className="w-4 h-4 text-black" />
                 <span>AGENDAR MI EXPERIENCIA</span>
@@ -431,6 +529,75 @@ export default function Home() {
           </div>
         </section>
 
+        {/* SECCIÓN DE MEMBRESÍAS VIP */}
+        <section id="membresias" className="space-y-10">
+          <div className="text-center space-y-2">
+            <span className="text-[#c5a059] font-black tracking-[0.3em] text-[9px] uppercase bg-[#c5a059]/10 px-3 py-1 rounded-full border border-[#c5a059]/20">Exclusividad</span>
+            <h2 className="text-3xl sm:text-4xl font-black tracking-wider uppercase font-serif">Planes de Membresía VIP</h2>
+            <p className="text-zinc-400 text-xs max-w-md mx-auto font-light">Selecciona tu plan, realiza tu depósito bancario y envía tu comprobante para activar tu acceso inmediato.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {membresias.map((plan, index) => (
+              <div 
+                key={index} 
+                className={`relative bg-[#08080c] border rounded-3xl p-8 flex flex-col justify-between shadow-xl transition-all ${
+                  plan.popular ? 'border-[#c5a059] shadow-[0_0_30px_rgba(197,160,89,0.15)] bg-gradient-to-b from-[#12100b] to-[#08080c] scale-[1.02]' : 'border-white/10 hover:border-white/20'
+                }`}
+              >
+                {plan.popular && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#c5a059] text-black text-[9px] font-black px-3.5 py-1 rounded-full uppercase tracking-widest shadow-md">
+                    Más Solicitado
+                  </span>
+                )}
+
+                <div className="space-y-5">
+                  <div>
+                    <h3 className="text-lg font-black uppercase tracking-wide text-white">{plan.titulo}</h3>
+                    <p className="text-xs text-zinc-400 mt-1 font-light">{plan.descripcion}</p>
+                  </div>
+
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black font-mono text-[#c5a059]">{plan.precio}</span>
+                    <span className="text-xs text-zinc-500 font-mono">/ {plan.frecuencia}</span>
+                  </div>
+
+                  <hr className="border-white/10" />
+
+                  <ul className="space-y-3 text-xs text-zinc-300">
+                    {plan.beneficios.map((beneficio, idx) => (
+                      <li key={idx} className="flex items-center gap-2.5">
+                        <span className="text-[#c5a059] font-bold">✓</span> <span className="font-light">{beneficio}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5 text-[11px] text-zinc-400">
+                    <span className="text-[#c5a059] font-bold block mb-0.5">💳 Cuenta de Depósito:</span>
+                    {INFO_BANCO}
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <button 
+                    onClick={() => {
+                      setPlanSeleccionado(plan.titulo);
+                      setModalMembresiaOpen(true);
+                    }}
+                    className={`w-full py-3.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${
+                      plan.popular 
+                        ? 'bg-[#c5a059] hover:opacity-90 text-black shadow-lg shadow-[#c5a059]/20' 
+                        : 'bg-zinc-900 hover:bg-black text-white border border-white/10 hover:border-[#c5a059]/40'
+                    }`}
+                  >
+                    Elegir Este Plan
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* VAULT STORE / TIENDA */}
         <section id="store" className="space-y-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-6 gap-6">
@@ -449,7 +616,7 @@ export default function Home() {
                 <button
                   key={cat}
                   onClick={() => setCategoriaActiva(cat)}
-                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                  className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${
                     categoriaActiva === cat
                       ? 'bg-[#c5a059] text-black border-[#c5a059] shadow-lg shadow-[#c5a059]/20'
                       : 'bg-[#08080c] text-zinc-400 border-white/10 hover:border-[#c5a059]/40 hover:text-white'
@@ -492,7 +659,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                       <button
                         onClick={() => setProductoQuickView(prod)}
-                        className="bg-black/90 hover:bg-black text-white p-3 rounded-xl border border-white/20 transition-all shadow-lg"
+                        className="bg-black/90 hover:bg-black text-white p-3 rounded-xl border border-white/20 transition-all shadow-lg cursor-pointer"
                         title="Vista rápida"
                       >
                         <IconEye className="w-4 h-4 text-[#c5a059]" />
@@ -500,33 +667,25 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="p-5 space-y-4 flex flex-col justify-between flex-grow">
+                  <div className="p-6 space-y-4">
                     <div className="space-y-1">
-                      <span className="text-[9px] font-bold tracking-widest text-[#c5a059] uppercase">
-                        {prod.categoria || 'GENERAL'}
-                      </span>
-                      <h3 className="text-sm font-bold text-white line-clamp-2 uppercase tracking-wide">{prod.nombre}</h3>
+                      <span className="text-[9px] font-mono tracking-widest text-[#c5a059] uppercase block">{prod.categoria || 'Colección'}</span>
+                      <h3 className="text-xs font-black uppercase tracking-wider text-white line-clamp-1">{prod.nombre}</h3>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                      <div>
-                        <span className="text-base font-black font-mono text-white block">
-                          {prod.precio}
-                        </span>
-                        {prod.precioAnterior && (
-                          <span className="text-[10px] text-zinc-500 line-through font-mono">
-                            {prod.precioAnterior}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <button
-                        onClick={() => handleSolicitarProducto(prod)}
-                        className="bg-[#c5a059] hover:opacity-90 text-black font-black px-4 py-2.5 rounded-xl text-[10px] uppercase tracking-widest transition-all shadow"
-                      >
-                        SOLICITAR
-                      </button>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm font-mono font-black text-[#c5a059]">{prod.precio}</span>
+                      {prod.precioAnterior && (
+                        <span className="text-xs font-mono text-zinc-500 line-through">{prod.precioAnterior}</span>
+                      )}
                     </div>
+
+                    <button
+                      onClick={() => handleSolicitarProducto(prod)}
+                      className="w-full bg-zinc-900 hover:bg-[#c5a059] hover:text-black border border-white/10 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <span>Solicitar Artículo</span>
+                    </button>
                   </div>
                 </div>
               ))}
@@ -534,203 +693,166 @@ export default function Home() {
           )}
         </section>
 
-        {/* UBICACIÓN DE LA TIENDA */}
+        {/* UBICACIÓN Y CONTACTO */}
         <section id="ubicacion" className="space-y-10">
-          <div className="border-b border-white/10 pb-6 space-y-2">
-            <span className="text-[9px] font-black tracking-[0.35em] text-[#c5a059] uppercase block">
-              ENCUÉNTRANOS
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-black uppercase text-white font-serif tracking-wider">
-              UBICACIÓN DE LA TIENDA
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#08080c] border border-[#c5a059]/20 rounded-3xl p-6 sm:p-10 shadow-2xl">
-            <div className="lg:col-span-5 space-y-6">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#12100b] border border-[#c5a059]/30 text-[9px] font-black tracking-widest text-[#c5a059] uppercase">
-                  SANTO DOMINGO ESTE • VILLA CARMEN
-                </div>
-                <h3 className="text-2xl font-black text-white font-serif uppercase tracking-wide">
-                  OTRO FLOW EXECUTIVE BARBERSHOP
-                </h3>
+          <div className="bg-[#08080c] border border-white/10 rounded-3xl p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <span className="text-[#c5a059] font-black tracking-[0.3em] text-[9px] uppercase bg-[#c5a059]/10 px-3 py-1 rounded-full border border-[#c5a059]/20">Localización</span>
+              <h2 className="text-3xl font-black uppercase tracking-wider font-serif">Visítanos en Hainamosa</h2>
+              
+              <div className="space-y-4 text-xs text-zinc-300 font-light">
+                <p className="flex items-start gap-3">
+                  <IconLocation className="w-5 h-5 text-[#c5a059] shrink-0 mt-0.5" />
+                  <span><strong>Dirección:</strong> {UBICACION_TIENDA}</span>
+                </p>
+                <p className="flex items-start gap-3">
+                  <IconClock className="w-5 h-5 text-[#c5a059] shrink-0 mt-0.5" />
+                  <span><strong>Horario:</strong> Lunes a Sábado de 9:00 AM a 8:00 PM. Domingos previa cita VIP.</span>
+                </p>
+                <p className="flex items-start gap-3">
+                  <span className="text-[#c5a059] font-bold text-base shrink-0">📞</span>
+                  <span><strong>Teléfono / WhatsApp:</strong> +1 ({TELEFONO_BARBERIA.slice(0,3)}) {TELEFONO_BARBERIA.slice(3,6)}-{TELEFONO_BARBERIA.slice(6)}</span>
+                </p>
               </div>
 
-              <p className="text-zinc-400 text-xs leading-relaxed font-light">
-                Te esperamos en nuestra sede principal ubicada en Villa Carmen, Santo Domingo Este. Un espacio diseñado con el más alto confort, excelente ambiente y atención preferencial.
-              </p>
-
-              <div className="space-y-3 pt-2">
-                <div className="flex items-start gap-3 text-xs text-zinc-300">
-                  <div className="mt-0.5 p-2 rounded-lg bg-black border border-white/10">
-                    <IconLocation />
-                  </div>
-                  <div>
-                    <strong className="text-white block uppercase tracking-wide text-[10px] text-[#c5a059]">Dirección Oficial:</strong>
-                    <span>{UBICACION_TIENDA}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 text-xs text-zinc-300">
-                  <div className="mt-0.5 p-2 rounded-lg bg-black border border-white/10">
-                    <IconClock />
-                  </div>
-                  <div>
-                    <strong className="text-white block uppercase tracking-wide text-[10px] text-[#c5a059]">Horario de Atención:</strong>
-                    <span>Lunes a Sábado: 9:00 AM — 8:00 PM<br />Domingos: Previa Cita</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(UBICACION_TIENDA)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 bg-zinc-900 hover:bg-black border border-[#c5a059]/40 text-[#c5a059] px-6 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg"
+              <div className="pt-2">
+                <button
+                  onClick={() => setModalReservaOpen(true)}
+                  className="bg-[#c5a059] hover:opacity-90 text-black font-black px-8 py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg shadow-[#c5a059]/20"
                 >
-                  <IconLocation className="w-4 h-4 text-[#c5a059]" />
-                  <span>VER EN GOOGLE MAPS</span>
-                </a>
+                  Reservar Mi Cita Ahora
+                </button>
               </div>
             </div>
 
-            <div className="lg:col-span-7 h-80 sm:h-96 rounded-2xl overflow-hidden border border-white/10 shadow-inner relative bg-black">
+            <div className="h-80 w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
               <iframe
-                title="Ubicación Villa Carmen Santo Domingo Este"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.150!2d-69.835!3d18.515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8ea563!2sVilla+Carmen%2C+Santo+Domingo+Este!5e0!3m2!1ses!2sdo!4v1650000000000!5m2!1ses!2sdo"
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(120%)' }}
+                title="Mapa Ubicacion Hainamosa"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3782.68412211915!2d-69.8315!3d18.5135!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTjCsDMwJzQ4LjYiTiA2OWfCsDQ5JzUzLjQiVw!5e0!3m2!1ses!2sdo!4v1650000000000"
+                className="w-full h-full border-0 filter contrast-125 invert hue-rotate-180"
                 allowFullScreen={false}
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </div>
         </section>
-
       </main>
 
       {/* FOOTER */}
-      <footer className="border-t border-white/10 bg-[#020204] py-12 px-6 mt-20">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-          <div className="space-y-2">
-            <span className="text-xl font-black tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#c5a059] to-amber-600 font-serif">
-              OTRO FLOW
-            </span>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest">
-              Executive Barbershop & Vault Store • Villa Carmen, S.D.E.
-            </p>
+      <footer className="bg-[#020204] border-t border-white/10 py-12 px-6 mt-20">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+          <div>
+            <span className="text-lg font-black tracking-[0.2em] text-[#c5a059] font-serif uppercase">OTRO FLOW</span>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 mt-1">Executive Barbershop • Hainamosa</p>
           </div>
 
-          <div className="text-xs text-zinc-400 font-light">
-            © {new Date().getFullYear()} Ezequiel Cuevas. Todos los derechos reservados.
+          <div className="text-[10px] text-zinc-500 uppercase tracking-widest">
+            © {new Date().getFullYear()} Ezequiel Peña Cuevas. Todos los derechos reservados.
           </div>
         </div>
       </footer>
 
-      {/* MODAL RESERVA DE CITAS */}
+      {/* MODAL DE RESERVA DE CITAS */}
       {modalReservaOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="bg-[#08080c] border border-[#c5a059]/40 w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#08080c] border border-[#c5a059]/30 w-full max-w-lg p-6 sm:p-8 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setModalReservaOpen(false)}
-              className="absolute top-6 right-6 text-zinc-400 hover:text-white"
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors cursor-pointer"
             >
               <IconX />
             </button>
 
-            <div className="space-y-1">
-              <span className="text-[9px] font-black tracking-[0.3em] text-[#c5a059] uppercase">RESERVA INMEDIATA</span>
-              <h3 className="text-2xl font-black uppercase font-serif text-white">AGENDAR TURNO VIP</h3>
+            <div className="space-y-2 mb-6">
+              <span className="text-[9px] font-black tracking-[0.3em] text-[#c5a059] uppercase">SISTEMA DE CITAS VIP</span>
+              <h3 className="text-xl font-black uppercase text-white font-serif">Reservar Tu Espacio</h3>
             </div>
 
-            <form onSubmit={handleReservarWhatsApp} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Tu Nombre Completo</label>
+            <form onSubmit={handleReservarWhatsApp} className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Nombre Completo *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Carlos Rosario"
+                  placeholder="Ej. Carlos Martínez"
                   value={nombreReserva}
                   onChange={(e) => setNombreReserva(e.target.value)}
-                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                  className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Teléfono / WhatsApp</label>
+              <div className="space-y-1.5">
+                <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Teléfono / WhatsApp *</label>
                 <input
                   type="tel"
                   required
-                  placeholder="Ej. 809-000-0000"
+                  placeholder="Ej. 829-000-0000"
                   value={telefonoReserva}
                   onChange={(e) => setTelefonoReserva(e.target.value)}
-                  className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                  className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Servicio Elegido</label>
+                <div className="space-y-1.5">
+                  <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Servicio Seleccionado *</label>
                   <select
                     value={servicioReserva}
                     onChange={(e) => setServicioReserva(e.target.value)}
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                    className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
                   >
-                    <option value="Corte Executive — RD$400">Corte Executive (RD$400)</option>
-                    <option value="Corte + Barba Royal — RD$650">Corte + Barba Royal (RD$650)</option>
-                    <option value="Perfilado y Tratamiento — RD$350">Perfilado y Tratamiento (RD$350)</option>
-                    <option value="Servicio a Domicilio VIP — Desde RD$1,000+">Servicio a Domicilio VIP (Desde RD$1,000+)</option>
+                    <option value="Corte Executive — RD$400">Corte Executive — RD$400</option>
+                    <option value="Corte + Barba Royal — RD$650">Corte + Barba Royal — RD$650</option>
+                    <option value="Perfilado y Tratamiento — RD$350">Perfilado y Tratamiento — RD$350</option>
+                    <option value="Servicio a Domicilio VIP — Desde RD$1,000+">Servicio a Domicilio VIP — Desde RD$1,000+</option>
                   </select>
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Barbero Especialista</label>
+                <div className="space-y-1.5">
+                  <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Especialista *</label>
                   <select
                     value={barberoReserva}
                     onChange={(e) => setBarberoReserva(e.target.value)}
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                    className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
                   >
                     <option value="Ezequiel Cuevas (Master Barber)">Ezequiel Cuevas (Master Barber)</option>
-                    <option value="Staff Executive">Especialista del Staff</option>
+                    <option value="Staff Otro Flow">Staff Otro Flow</option>
                   </select>
                 </div>
               </div>
 
               {servicioReserva.toLowerCase().includes('domicilio') && (
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-[#c5a059] uppercase tracking-wider">Dirección Exacta para Domicilio</label>
+                <div className="space-y-1.5 bg-[#12100b] p-4 rounded-xl border border-[#c5a059]/30">
+                  <label className="text-[#c5a059] font-bold uppercase tracking-wider text-[9px]">Dirección exacta para Domicilio *</label>
                   <input
                     type="text"
                     required
-                    placeholder="Calle, Número, Torre, Sector (Villa Carmen, S.D.E., etc.)"
+                    placeholder="Calle, número, sector o torre..."
                     value={direccionDomicilio}
                     onChange={(e) => setDireccionDomicilio(e.target.value)}
-                    className="w-full bg-black border border-[#c5a059]/40 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                    className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3 text-white outline-none transition-all mt-1"
                   />
                 </div>
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fecha de Cita</label>
+                <div className="space-y-1.5">
+                  <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Fecha *</label>
                   <input
                     type="date"
                     required
                     value={fechaReserva}
                     onChange={(e) => setFechaReserva(e.target.value)}
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none [color-scheme:dark]"
+                    className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Hora Disponible</label>
+                <div className="space-y-1.5">
+                  <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Hora Preferida *</label>
                   <select
                     value={horaReserva}
                     onChange={(e) => setHoraReserva(e.target.value)}
-                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-xs text-white focus:border-[#c5a059] focus:outline-none"
+                    className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
                   >
                     {horariosDisponibles.map((h, i) => (
                       <option key={i} value={h}>{h}</option>
@@ -739,29 +861,104 @@ export default function Home() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-[#d4af37] via-[#c5a059] to-[#8a6d3b] text-black font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all shadow-[0_0_25px_rgba(197,160,89,0.3)] hover:opacity-95"
-              >
-                CONFIRMAR Y ENVIAR POR WHATSAPP
-              </button>
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-amber-500 via-[#c5a059] to-amber-700 hover:opacity-95 text-black font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-all shadow-lg shadow-[#c5a059]/20 cursor-pointer"
+                >
+                  Confirmar Cita vía WhatsApp
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* MODAL VISTA RÁPIDA DE PRODUCTO */}
-      {productoQuickView && (
+      {/* MODAL DE INSCRIPCIÓN A MEMBRESÍA VIP */}
+      {modalMembresiaOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-          <div className="bg-[#08080c] border border-[#c5a059]/40 w-full max-w-md rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
+          <div className="bg-[#08080c] border border-[#c5a059]/30 w-full max-w-md p-6 sm:p-8 rounded-3xl shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => setProductoQuickView(null)}
-              className="absolute top-6 right-6 text-zinc-400 hover:text-white"
+              onClick={() => setModalMembresiaOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors cursor-pointer"
             >
               <IconX />
             </button>
 
-            <div className="relative h-64 rounded-2xl overflow-hidden bg-black border border-white/10">
+            <div className="space-y-2 mb-6">
+              <span className="text-[9px] font-black tracking-[0.3em] text-[#c5a059] uppercase">MEMBRESÍAS EXCLUSIVAS</span>
+              <h3 className="text-xl font-black uppercase text-white font-serif">Suscribirse al {planSeleccionado}</h3>
+            </div>
+
+            <div className="mb-6 p-4 rounded-2xl bg-black/60 border border-[#c5a059]/20 space-y-2 text-xs">
+              <span className="text-[#c5a059] font-bold block uppercase tracking-wider text-[10px]">Instrucciones de Pago:</span>
+              <p className="text-zinc-300 font-light">Realiza el depósito correspondiente a:</p>
+              <p className="font-mono font-bold text-white bg-white/5 p-2.5 rounded-xl border border-white/10">{INFO_BANCO}</p>
+              <p className="text-[10px] text-zinc-400">Luego completa tus datos y envía tu comprobante por WhatsApp.</p>
+            </div>
+
+            <form onSubmit={handleRegistrarMembresia} className="space-y-4 text-xs">
+              <div className="space-y-1.5">
+                <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Nombre Completo *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej. Roberto Gómez"
+                  value={nombreMembresia}
+                  onChange={(e) => setNombreMembresia(e.target.value)}
+                  className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Teléfono / WhatsApp *</label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="Ej. 829-000-0000"
+                  value={telefonoMembresia}
+                  onChange={(e) => setTelefonoMembresia(e.target.value)}
+                  className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-zinc-400 font-bold uppercase tracking-wider text-[9px]">Número de Transferencia o Comprobante</label>
+                <input
+                  type="text"
+                  placeholder="Ej. Ref 984523 (Opcional)"
+                  value={codigoVerificacion}
+                  onChange={(e) => setCodigoVerificacion(e.target.value)}
+                  className="w-full bg-[#030305] border border-white/10 focus:border-[#c5a059] rounded-xl p-3.5 text-white outline-none transition-all font-mono"
+                />
+              </div>
+
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className="w-full bg-[#c5a059] hover:opacity-90 text-black font-black py-4 rounded-xl uppercase tracking-widest text-xs transition-all shadow-lg shadow-[#c5a059]/20 cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <IconPaperclip className="w-4 h-4 text-black" />
+                  <span>Enviar Comprobante vía WhatsApp</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE VISTA RÁPIDA DE PRODUCTOS */}
+      {productoQuickView && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="bg-[#08080c] border border-white/10 w-full max-w-2xl p-6 sm:p-8 rounded-3xl shadow-2xl relative grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <button
+              onClick={() => setProductoQuickView(null)}
+              className="absolute top-4 right-4 p-2 rounded-full bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-colors cursor-pointer z-10"
+            >
+              <IconX />
+            </button>
+
+            <div className="h-64 sm:h-80 rounded-2xl overflow-hidden bg-black border border-white/10">
               <img
                 src={productoQuickView.img}
                 alt={productoQuickView.nombre}
@@ -769,29 +966,35 @@ export default function Home() {
               />
             </div>
 
-            <div className="space-y-2">
-              <span className="text-[9px] font-black uppercase tracking-widest text-[#c5a059]">
-                {productoQuickView.categoria || 'VAULT STORE'}
+            <div className="space-y-4">
+              <span className="text-[9px] font-mono tracking-widest text-[#c5a059] uppercase bg-[#c5a059]/10 px-2.5 py-1 rounded-md border border-[#c5a059]/20">
+                {productoQuickView.categoria || 'Vault Store'}
               </span>
-              <h3 className="text-xl font-bold uppercase text-white font-serif">{productoQuickView.nombre}</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed font-light">
-                {productoQuickView.descripcion || 'Artículo exclusivo seleccionado bajo el estándar de calidad y estilo Otro Flow.'}
-              </p>
-            </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
-              <span className="text-xl font-black font-mono text-[#c5a059]">
-                {productoQuickView.precio}
-              </span>
-              <button
-                onClick={() => {
-                  handleSolicitarProducto(productoQuickView);
-                  setProductoQuickView(null);
-                }}
-                className="bg-[#c5a059] text-black font-black text-xs px-6 py-3 rounded-xl uppercase tracking-widest hover:opacity-90 transition-all"
-              >
-                PEDIR POR WHATSAPP
-              </button>
+              <h3 className="text-lg font-black uppercase text-white font-serif">{productoQuickView.nombre}</h3>
+
+              <div className="flex items-baseline gap-3">
+                <span className="text-xl font-mono font-black text-[#c5a059]">{productoQuickView.precio}</span>
+                {productoQuickView.precioAnterior && (
+                  <span className="text-sm font-mono text-zinc-500 line-through">{productoQuickView.precioAnterior}</span>
+                )}
+              </div>
+
+              <p className="text-xs text-zinc-300 font-light leading-relaxed">
+                {productoQuickView.descripcion || 'Artículo exclusivo seleccionado bajo altos estándares de calidad para complementar tu estilo urbano y ejecutivo.'}
+              </p>
+
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    handleSolicitarProducto(productoQuickView);
+                    setProductoQuickView(null);
+                  }}
+                  className="w-full bg-[#c5a059] hover:opacity-90 text-black font-black py-3.5 rounded-xl uppercase tracking-widest text-[10px] transition-all shadow-lg cursor-pointer"
+                >
+                  Pedir Este Artículo
+                </button>
+              </div>
             </div>
           </div>
         </div>
